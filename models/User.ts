@@ -1,6 +1,6 @@
-import mongoose, { Schema, models, model } from "mongoose";
+import mongoose, { Schema, models, model } from "mongoose"
 
-const userSchema = new Schema(
+const UserSchema = new Schema(
   {
     username: {
       type: String,
@@ -8,32 +8,60 @@ const userSchema = new Schema(
       unique: true,
       lowercase: true,
       trim: true,
-      index: true,
+      index: true
     },
+
     email: {
       type: String,
       required: true,
       unique: true,
       lowercase: true,
-      trim: true,
+      trim: true
     },
+
     fullName: {
       type: String,
       required: true,
       trim: true,
-      index: true,
+      index: true
     },
+
     password: {
       type: String,
-      required: true,
+      required: true
     },
+
     role: {
       type: String,
       enum: ["ADMIN", "OFFICER", "CLERK"],
       default: "OFFICER",
+      index: true
     },
-  },
-  { timestamps: true }
-);
 
-export const User = models.User || model("User", userSchema);
+    officerId: {
+      type: String,
+      required: true,
+      trim: true,
+      index: true
+    },
+
+    policeStation: {
+      type: String,
+      required: true,
+      trim: true,
+      index: true
+    },
+
+    status: {
+      type: String,
+      enum: ["ACTIVE", "SUSPENDED"],
+      default: "ACTIVE",
+      index: true
+    }
+  },
+  {
+    timestamps: true
+  }
+)
+
+export const User = models.User || model("User", UserSchema)

@@ -1,9 +1,9 @@
-import { NextAuthOptions } from "next-auth";
-import Credentials from "next-auth/providers/credentials";
-import bcrypt from "bcryptjs";
+import { NextAuthOptions } from "next-auth"
+import Credentials from "next-auth/providers/credentials"
+import bcrypt from "bcryptjs"
 
-import { connectDB } from "@/lib/db";
-import { User } from "@/models/User";
+import { connectDB } from "@/lib/db"
+import { User } from "@/models/User"
 
 export const authOptions: NextAuthOptions = {
   session: {
@@ -20,26 +20,30 @@ export const authOptions: NextAuthOptions = {
 
       async authorize(credentials) {
         if (!credentials?.username || !credentials?.password) {
-          throw new Error("Missing username or password");
+          throw new Error("Missing username or password")
         }
 
-        await connectDB();
+        await connectDB()
 
         const user = await User.findOne({
           username: credentials.username.toLowerCase(),
-        });
+        })
 
         if (!user) {
-          throw new Error("Invalid username or password");
+          throw new Error("Invalid username or password")
+        }
+
+        if (user.status !== "ACTIVE") {
+          throw new Error("Account suspended")
         }
 
         const isValid = await bcrypt.compare(
           credentials.password,
           user.password
-        );
+        )
 
         if (!isValid) {
-          throw new Error("Invalid username or password");
+          throw new Error("Invalid username or password")
         }
 
         return {
@@ -48,7 +52,7 @@ export const authOptions: NextAuthOptions = {
           role: user.role,
           name: user.fullName,
           email: user.email,
-        };
+        }
       },
     }),
   ],
@@ -56,20 +60,20 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.role = user.role;
-        token.username = user.username;
-        token.id = user.id;
+        token.role = user.role
+        token.username = user.username
+        token.id = user.id
       }
-      return token;
+      return token
     },
 
     async session({ session, token }) {
       if (session.user) {
-        session.user.role = token.role as string;
-        session.user.username = token.username as string;
-        session.user.id = token.id as string;
+        session.user.role = token.role as string
+        session.user.username = token.username as string
+        session.user.id = token.id as string
       }
-      return session;
+      return session
     },
   },
 
@@ -78,4 +82,4 @@ export const authOptions: NextAuthOptions = {
   },
 
   secret: process.env.NEXTAUTH_SECRET,
-};
+}
