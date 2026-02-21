@@ -73,14 +73,14 @@ export default function CustodyLogsList({ logs }: { logs: any[] }) {
                         {log.purpose}
                       </span>
                       <span className="text-sm text-gray-500">
-                        {new Date(log.timestamp).toLocaleDateString("en-IN", {
+                        {new Date(log.movementTimestamp).toLocaleDateString("en-IN", {
                           day: "2-digit",
                           month: "short",
                           year: "numeric",
                         })}
                       </span>
                       <span className="text-sm text-gray-500">
-                        {new Date(log.timestamp).toLocaleTimeString("en-IN", {
+                        {new Date(log.movementTimestamp).toLocaleTimeString("en-IN", {
                           hour: "2-digit",
                           minute: "2-digit",
                         })}
@@ -97,7 +97,7 @@ export default function CustodyLogsList({ logs }: { logs: any[] }) {
                         FROM
                       </p>
                       <p className="text-sm font-bold text-gray-900">
-                        {log.from}
+                        {log.fromOfficer} ({log.fromLocation})
                       </p>
                     </div>
 
@@ -120,7 +120,7 @@ export default function CustodyLogsList({ logs }: { logs: any[] }) {
                         TO
                       </p>
                       <p className="text-sm font-bold text-gray-900">
-                        {log.to}
+                        {log.toOfficer} ({log.toLocation})
                       </p>
                     </div>
                   </div>

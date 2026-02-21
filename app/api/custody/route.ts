@@ -2,9 +2,30 @@ import { NextRequest, NextResponse } from "next/server"
 import { getServerSession } from "next-auth"
 
 import { connectDB } from "@/lib/db"
-import { Custody } from "@/models/Custody"
+import { CustodyLog } from "@/models/CustodyLog"
 import { Property } from "@/models/Property"
 import { authOptions } from "@/lib/auth"
+
+export async function GET(req: NextRequest) {
+  const session = await getServerSession(authOptions)
+
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  await connectDB()
+
+  const { searchParams } = new URL(req.url)
+  const propertyId = searchParams.get("propertyId")
+
+  if (!propertyId) {
+    return NextResponse.json({ error: "propertyId is required" }, { status: 400 })
+  }
+
+  const logs = await CustodyLog.find({ propertyId }).sort({ movementTimestamp: -1 })
+
+  return NextResponse.json(logs)
+}
 
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
@@ -46,7 +67,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Property not found" }, { status: 404 })
   }
 
-  const custody = await Custody.create({
+  const custody = await CustodyLog.create({
     propertyId,
     fromOfficer,
     toOfficer,

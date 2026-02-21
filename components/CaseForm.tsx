@@ -8,15 +8,16 @@ export default function CaseForm() {
   const router = useRouter();
 
   const [form, setForm] = useState({
-    policeStationName: "",
+    policeStation: "",
+    stationAddress: "",
     investigatingOfficerName: "",
     investigatingOfficerId: "",
     crimeNumber: "",
     crimeYear: new Date().getFullYear().toString(),
-    dateOfFIR: "",
-    dateOfSeizure: "",
+    firDate: "",
+    seizureDate: "",
     actAndLaw: "",
-    sections: "",
+    section: "",
   });
 
   const [error, setError] = useState("");
@@ -35,19 +36,19 @@ export default function CaseForm() {
     setError("");
     setIsLoading(true);
 
-    if (new Date(form.dateOfFIR) > new Date()) {
+    if (new Date(form.firDate) > new Date()) {
       setError("Date of FIR cannot be in the future");
       setIsLoading(false);
       return;
     }
 
-    if (new Date(form.dateOfSeizure) > new Date()) {
+    if (new Date(form.seizureDate) > new Date()) {
       setError("Date of Seizure cannot be in the future");
       setIsLoading(false);
       return;
     }
 
-    if (new Date(form.dateOfSeizure) < new Date(form.dateOfFIR)) {
+    if (new Date(form.seizureDate) < new Date(form.firDate)) {
       setError("Date of Seizure cannot be before Date of FIR");
       setIsLoading(false);
       return;
@@ -80,20 +81,39 @@ export default function CaseForm() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
               <label
-                htmlFor="policeStationName"
+                htmlFor="policeStation"
                 className="block text-sm font-semibold text-gray-700 mb-2"
               >
                 Police Station Name *
               </label>
               <input
-                id="policeStationName"
-                name="policeStationName"
+                id="policeStation"
+                name="policeStation"
                 type="text"
                 placeholder="Enter police station name"
-                value={form.policeStationName}
+                value={form.policeStation}
                 onChange={handleChange}
                 className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
                 required
+                disabled={isLoading}
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="stationAddress"
+                className="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                Station Address
+              </label>
+              <input
+                id="stationAddress"
+                name="stationAddress"
+                type="text"
+                placeholder="Enter station address"
+                value={form.stationAddress}
+                onChange={handleChange}
+                className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
                 disabled={isLoading}
               />
             </div>
@@ -193,16 +213,16 @@ export default function CaseForm() {
 
             <div>
               <label
-                htmlFor="dateOfFIR"
+                htmlFor="firDate"
                 className="block text-sm font-semibold text-gray-700 mb-2"
               >
                 Date of FIR *
               </label>
               <input
-                id="dateOfFIR"
-                name="dateOfFIR"
+                id="firDate"
+                name="firDate"
                 type="date"
-                value={form.dateOfFIR}
+                value={form.firDate}
                 onChange={handleChange}
                 max={new Date().toISOString().split("T")[0]}
                 className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
@@ -213,16 +233,16 @@ export default function CaseForm() {
 
             <div>
               <label
-                htmlFor="dateOfSeizure"
+                htmlFor="seizureDate"
                 className="block text-sm font-semibold text-gray-700 mb-2"
               >
                 Date of Seizure *
               </label>
               <input
-                id="dateOfSeizure"
-                name="dateOfSeizure"
+                id="seizureDate"
+                name="seizureDate"
                 type="date"
-                value={form.dateOfSeizure}
+                value={form.seizureDate}
                 onChange={handleChange}
                 max={new Date().toISOString().split("T")[0]}
                 className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
@@ -259,16 +279,16 @@ export default function CaseForm() {
 
             <div>
               <label
-                htmlFor="sections"
+                htmlFor="section"
                 className="block text-sm font-semibold text-gray-700 mb-2"
               >
                 Sections of Law *
               </label>
               <textarea
-                id="sections"
-                name="sections"
+                id="section"
+                name="section"
                 placeholder="e.g., Section 302, 307, 34 IPC"
-                value={form.sections}
+                value={form.section}
                 onChange={handleChange}
                 rows={3}
                 className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a] resize-none"

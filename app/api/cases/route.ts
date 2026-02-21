@@ -4,6 +4,48 @@ import { Case } from "@/models/Case"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 
+export async function GET(req: NextRequest) {
+  const session = await getServerSession(authOptions)
+
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  await connectDB()
+
+  const { searchParams } = new URL(req.url)
+  const q = searchParams.get("q")?.trim()
+  const status = searchParams.get("status")
+
+  const filter: any = {}
+
+  if (status && status !== "ALL") {
+    filter.status = status.toUpperCase()
+  }
+
+  if (q) {
+    const regex = new RegExp(q, "i")
+    filter.$or = [
+      { crimeNumber: regex },
+      { caseNumber: regex },
+      { policeStation: regex },
+      { investigatingOfficerName: regex },
+      { investigatingOfficerId: regex },
+      { actAndLaw: regex },
+      { section: regex },
+    ]
+
+    const yearNum = Number(q)
+    if (!isNaN(yearNum)) {
+      filter.$or.push({ crimeYear: yearNum })
+    }
+  }
+
+  const cases = await Case.find(filter).sort({ createdAt: -1 }).limit(100)
+
+  return NextResponse.json(cases)
+}
+
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
 

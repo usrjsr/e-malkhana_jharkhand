@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { UploadButton } from "@/utils/uploadthing";
 import { createProperty } from "@/app/cases/[caseId]/properties/new/actions";
 
 export default function PropertyForm({ caseId }: { caseId: string }) {
@@ -11,17 +10,17 @@ export default function PropertyForm({ caseId }: { caseId: string }) {
   const [form, setForm] = useState({
     category: "",
     belongingTo: "UNKNOWN",
-    nature: "",
+    natureOfProperty: "",
     quantity: "",
-    unit: "",
-    location: "",
+    units: "",
+    storageLocation: "",
     description: "",
-    seizureDate: "",
   });
 
   const [imageUrl, setImageUrl] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   function handleChange(
     e: React.ChangeEvent<
@@ -29,6 +28,38 @@ export default function PropertyForm({ caseId }: { caseId: string }) {
     >,
   ) {
     setForm({ ...form, [e.target.name]: e.target.value });
+  }
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setError("");
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Upload failed");
+      }
+
+      const data = await res.json();
+      setImageUrl(data.url);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Image upload failed. Please try again."
+      );
+    } finally {
+      setIsUploading(false);
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -47,13 +78,12 @@ export default function PropertyForm({ caseId }: { caseId: string }) {
         caseId,
         category: form.category,
         belongingTo: form.belongingTo,
-        nature: form.nature,
+        natureOfProperty: form.natureOfProperty,
         quantity: form.quantity,
-        unit: form.unit,
-        location: form.location,
+        units: form.units,
+        storageLocation: form.storageLocation,
         description: form.description,
-        seizureDate: form.seizureDate,
-        imageUrl,
+        itemImage: imageUrl,
       });
 
       router.replace(`/cases/${caseId}/properties/${result.propertyId}`);
@@ -172,17 +202,44 @@ export default function PropertyForm({ caseId }: { caseId: string }) {
                   </p>
                   <p className="text-sm text-gray-500 mb-4">
                     Click below to select and upload a clear image of the seized
-                    property
+                    property (JPEG, PNG, WebP — max 10MB)
                   </p>
-                  <UploadButton
-                    endpoint="propertyImage"
-                    onClientUploadComplete={(res: { url: string }[]) => {
-                      setImageUrl(res[0].url);
-                    }}
-                    onUploadError={() => {
-                      setError("Image upload failed. Please try again.");
-                    }}
-                  />
+                  <label className="inline-block cursor-pointer bg-[#1e3a8a] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#1e40af] transition-colors">
+                    {isUploading ? (
+                      <span className="flex items-center gap-2">
+                        <svg
+                          className="animate-spin h-5 w-5 text-white"
+                          xmlns="http://www.w3.org/2000/svg"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                        >
+                          <circle
+                            className="opacity-25"
+                            cx="12"
+                            cy="12"
+                            r="10"
+                            stroke="currentColor"
+                            strokeWidth="4"
+                          />
+                          <path
+                            className="opacity-75"
+                            fill="currentColor"
+                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                          />
+                        </svg>
+                        Uploading...
+                      </span>
+                    ) : (
+                      "Choose Image"
+                    )}
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                      disabled={isUploading}
+                    />
+                  </label>
                 </div>
               )}
             </div>
@@ -251,17 +308,17 @@ export default function PropertyForm({ caseId }: { caseId: string }) {
 
               <div className="md:col-span-2">
                 <label
-                  htmlFor="nature"
+                  htmlFor="natureOfProperty"
                   className="block text-sm font-semibold text-gray-700 mb-2"
                 >
                   Nature of Property *
                 </label>
                 <input
-                  id="nature"
-                  name="nature"
+                  id="natureOfProperty"
+                  name="natureOfProperty"
                   type="text"
                   placeholder="e.g., Mobile Phone, Gold Chain, Motorcycle"
-                  value={form.nature}
+                  value={form.natureOfProperty}
                   onChange={handleChange}
                   className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
                   required
@@ -313,17 +370,17 @@ export default function PropertyForm({ caseId }: { caseId: string }) {
 
               <div>
                 <label
-                  htmlFor="unit"
+                  htmlFor="units"
                   className="block text-sm font-semibold text-gray-700 mb-2"
                 >
-                  Unit
+                  Units *
                 </label>
                 <input
-                  id="unit"
-                  name="unit"
+                  id="units"
+                  name="units"
                   type="text"
                   placeholder="e.g., pieces, grams, liters"
-                  value={form.unit}
+                  value={form.units}
                   onChange={handleChange}
                   className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
                   disabled={isLoading}
@@ -332,39 +389,20 @@ export default function PropertyForm({ caseId }: { caseId: string }) {
 
               <div className="md:col-span-2">
                 <label
-                  htmlFor="location"
+                  htmlFor="storageLocation"
                   className="block text-sm font-semibold text-gray-700 mb-2"
                 >
                   Storage Location *
                 </label>
                 <input
-                  id="location"
-                  name="location"
+                  id="storageLocation"
+                  name="storageLocation"
                   type="text"
                   placeholder="e.g., Rack A-12, Room 3, Locker 45"
-                  value={form.location}
+                  value={form.storageLocation}
                   onChange={handleChange}
                   className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
                   required
-                  disabled={isLoading}
-                />
-              </div>
-
-              <div className="md:col-span-2">
-                <label
-                  htmlFor="seizureDate"
-                  className="block text-sm font-semibold text-gray-700 mb-2"
-                >
-                  Date of Seizure
-                </label>
-                <input
-                  id="seizureDate"
-                  name="seizureDate"
-                  type="date"
-                  value={form.seizureDate}
-                  onChange={handleChange}
-                  max={new Date().toISOString().split("T")[0]}
-                  className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
                   disabled={isLoading}
                 />
               </div>

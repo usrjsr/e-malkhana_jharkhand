@@ -15,6 +15,7 @@ export default function DisposalForm() {
     disposalType: "",
     courtOrderReference: "",
     disposalDate: "",
+    disposalAuthority: "",
     remarks: "",
   });
 
@@ -47,6 +48,7 @@ export default function DisposalForm() {
         disposalType: form.disposalType,
         courtOrderReference: form.courtOrderReference,
         disposalDate: form.disposalDate,
+        disposalAuthority: form.disposalAuthority,
         remarks: form.remarks,
       });
       router.replace(`/cases/${caseId}/properties/${propertyId}`);
@@ -149,6 +151,29 @@ export default function DisposalForm() {
             />
             <p className="text-xs text-gray-500 mt-1">
               Date when the property was disposed
+            </p>
+          </div>
+
+          <div>
+            <label
+              htmlFor="disposalAuthority"
+              className="block text-sm font-semibold text-gray-700 mb-2"
+            >
+              Disposal Authority *
+            </label>
+            <input
+              id="disposalAuthority"
+              name="disposalAuthority"
+              type="text"
+              placeholder="e.g., District Court Judge, Magistrate Name"
+              value={form.disposalAuthority}
+              onChange={handleChange}
+              className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#dc3545] focus:ring-2 focus:ring-[#dc3545] focus:ring-opacity-20 transition-all duration-200"
+              required
+              disabled={loading}
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Authority who authorized the disposal
             </p>
           </div>
         </div>

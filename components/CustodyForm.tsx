@@ -11,11 +11,14 @@ export default function CustodyForm({
   onSuccess: () => void;
 }) {
   const [form, setForm] = useState({
-    from: "",
-    to: "",
+    fromOfficer: "",
+    toOfficer: "",
+    fromLocation: "",
+    toLocation: "",
     purpose: "STORAGE",
+    action: "MOVED",
     remarks: "",
-    timestamp: "",
+    movementTimestamp: "",
   });
 
   const [error, setError] = useState("");
@@ -37,19 +40,25 @@ export default function CustodyForm({
     try {
       await addCustodyLog({
         propertyId,
-        from: form.from,
-        to: form.to,
+        fromOfficer: form.fromOfficer,
+        toOfficer: form.toOfficer,
+        fromLocation: form.fromLocation,
+        toLocation: form.toLocation,
         purpose: form.purpose,
+        action: form.action,
         remarks: form.remarks,
-        timestamp: form.timestamp,
+        movementTimestamp: form.movementTimestamp,
       });
 
       setForm({
-        from: "",
-        to: "",
+        fromOfficer: "",
+        toOfficer: "",
+        fromLocation: "",
+        toLocation: "",
         purpose: "STORAGE",
+        action: "MOVED",
         remarks: "",
-        timestamp: "",
+        movementTimestamp: "",
       });
 
       setLoading(false);
@@ -64,44 +73,86 @@ export default function CustodyForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label
-          htmlFor="from"
-          className="block text-sm font-semibold text-gray-700 mb-2"
-        >
-          From (Location/Officer) *
-        </label>
-        <input
-          id="from"
-          name="from"
-          placeholder="e.g., Officer Name / Malkhana Room 3"
-          value={form.from}
-          onChange={handleChange}
-          className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
-          required
-          disabled={loading}
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label
+            htmlFor="fromOfficer"
+            className="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            From Officer *
+          </label>
+          <input
+            id="fromOfficer"
+            name="fromOfficer"
+            placeholder="e.g., Inspector Sharma"
+            value={form.fromOfficer}
+            onChange={handleChange}
+            className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+            required
+            disabled={loading}
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="toOfficer"
+            className="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            To Officer
+          </label>
+          <input
+            id="toOfficer"
+            name="toOfficer"
+            placeholder="e.g., Sub-Inspector Verma"
+            value={form.toOfficer}
+            onChange={handleChange}
+            className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+            disabled={loading}
+          />
+        </div>
       </div>
 
-      <div>
-        <label
-          htmlFor="to"
-          className="block text-sm font-semibold text-gray-700 mb-2"
-        >
-          To (Location/Officer) *
-        </label>
-        <input
-          id="to"
-          name="to"
-          placeholder="e.g., Officer Name / Court / FSL"
-          value={form.to}
-          onChange={handleChange}
-          className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
-          required
-          disabled={loading}
-        />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label
+            htmlFor="fromLocation"
+            className="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            From Location *
+          </label>
+          <input
+            id="fromLocation"
+            name="fromLocation"
+            placeholder="e.g., Malkhana Room 3"
+            value={form.fromLocation}
+            onChange={handleChange}
+            className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+            required
+            disabled={loading}
+          />
+        </div>
+
+        <div>
+          <label
+            htmlFor="toLocation"
+            className="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            To Location *
+          </label>
+          <input
+            id="toLocation"
+            name="toLocation"
+            placeholder="e.g., Court / FSL Lab"
+            value={form.toLocation}
+            onChange={handleChange}
+            className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+            required
+            disabled={loading}
+          />
+        </div>
       </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div>
         <label
           htmlFor="purpose"
@@ -123,21 +174,47 @@ export default function CustodyForm({
           <option value="FSL">FSL Analysis</option>
           <option value="ANALYSIS">Analysis/Examination</option>
           <option value="TRANSFER">Transfer</option>
+          <option value="DISPOSAL">Disposal</option>
+          <option value="RELEASE">Release</option>
         </select>
       </div>
 
       <div>
         <label
-          htmlFor="timestamp"
+          htmlFor="action"
+          className="block text-sm font-semibold text-gray-700 mb-2"
+        >
+          Action *
+        </label>
+        <select
+          id="action"
+          name="action"
+          value={form.action}
+          onChange={handleChange}
+          className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+          required
+          disabled={loading}
+        >
+          <option value="MOVED">Moved</option>
+          <option value="RECEIVED">Received</option>
+          <option value="DISPOSED">Disposed</option>
+          <option value="RELEASED">Released</option>
+        </select>
+      </div>
+      </div>
+
+      <div>
+        <label
+          htmlFor="movementTimestamp"
           className="block text-sm font-semibold text-gray-700 mb-2"
         >
           Date & Time *
         </label>
         <input
-          id="timestamp"
+          id="movementTimestamp"
           type="datetime-local"
-          name="timestamp"
-          value={form.timestamp}
+          name="movementTimestamp"
+          value={form.movementTimestamp}
           onChange={handleChange}
           className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
           required

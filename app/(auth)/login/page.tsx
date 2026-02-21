@@ -1,42 +1,28 @@
-"use client"
+"use client";
 
-import { signIn } from "next-auth/react"
-import { useState } from "react"
+import Link from "next/link";
+import LoginForm from "@/components/LoginForm";
 
 export default function LoginPage() {
-  const [username, setUsername] = useState("")
-  const [password, setPassword] = useState("")
-
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault()
-
-    await signIn("credentials", {
-      username,
-      password,
-      callbackUrl: "/",
-    })
-  }
-
   return (
-    <div className="flex h-screen items-center justify-center">
-      <form onSubmit={handleLogin} className="space-y-4">
-        <input
-          placeholder="Username"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          className="border p-2"
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          className="border p-2"
-        />
-        <button className="bg-blue-600 text-white px-4 py-2">
-          Login
-        </button>
-      </form>
+    <div className="min-h-screen bg-white">
+      <div className="bg-[#f8f9fa] border-b border-gray-300">
+        <div className="container mx-auto px-4 py-3">
+          <div className="flex items-center text-sm text-gray-600">
+            <Link href="/" className="hover:text-[#1e3a8a]">
+              Home
+            </Link>
+            <span className="mx-2">/</span>
+            <span className="text-[#1e3a8a] font-semibold">Officer Login</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-md mx-auto">
+          <LoginForm />
+        </div>
+      </div>
     </div>
-  )
+  );
 }

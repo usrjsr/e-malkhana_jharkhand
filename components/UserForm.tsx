@@ -8,10 +8,12 @@ export default function UserForm() {
   const router = useRouter();
 
   const [form, setForm] = useState({
+    fullName: "",
+    email: "",
     username: "",
     password: "",
     confirmPassword: "",
-    role: "USER",
+    role: "OFFICER",
     officerId: "",
     policeStation: "",
   });
@@ -52,6 +54,8 @@ export default function UserForm() {
 
     try {
       await createUser({
+        fullName: form.fullName,
+        email: form.email,
         username: form.username,
         password: form.password,
         role: form.role,
@@ -76,6 +80,46 @@ export default function UserForm() {
 
       <div className="p-6 space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label
+              htmlFor="fullName"
+              className="block text-sm font-semibold text-gray-700 mb-2"
+            >
+              Full Name *
+            </label>
+            <input
+              id="fullName"
+              name="fullName"
+              type="text"
+              placeholder="Enter full name"
+              value={form.fullName}
+              onChange={handleChange}
+              className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
+              required
+              disabled={isLoading}
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="email"
+              className="block text-sm font-semibold text-gray-700 mb-2"
+            >
+              Email *
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="Enter email address"
+              value={form.email}
+              onChange={handleChange}
+              className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
+              required
+              disabled={isLoading}
+            />
+          </div>
+
           <div>
             <label
               htmlFor="username"
@@ -192,8 +236,9 @@ export default function UserForm() {
               required
               disabled={isLoading}
             >
-              <option value="USER">User (Officer)</option>
+              <option value="OFFICER">Officer</option>
               <option value="ADMIN">Admin</option>
+              <option value="CLERK">Clerk</option>
             </select>
           </div>
         </div>

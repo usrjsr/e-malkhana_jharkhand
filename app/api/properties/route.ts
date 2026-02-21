@@ -7,6 +7,27 @@ import { Property } from "@/models/Property"
 import { Case } from "@/models/Case"
 import { authOptions } from "@/lib/auth"
 
+export async function GET(req: NextRequest) {
+  const session = await getServerSession(authOptions)
+
+  if (!session) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+  }
+
+  await connectDB()
+
+  const { searchParams } = new URL(req.url)
+  const caseId = searchParams.get("caseId")
+
+  if (!caseId) {
+    return NextResponse.json({ error: "caseId is required" }, { status: 400 })
+  }
+
+  const properties = await Property.find({ caseId }).sort({ createdAt: -1 })
+
+  return NextResponse.json(properties)
+}
+
 export async function POST(req: NextRequest) {
   const session = await getServerSession(authOptions)
 
