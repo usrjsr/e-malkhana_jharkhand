@@ -99,6 +99,9 @@ export default function CustodyLogsList({ logs }: { logs: any[] }) {
                       <p className="text-sm font-bold text-gray-900">
                         {log.fromOfficer} ({log.fromLocation})
                       </p>
+                      {log.fromOfficerId && (
+                        <p className="text-xs text-gray-500 mt-1">Officer ID: <span className="font-semibold">{log.fromOfficerId}</span></p>
+                      )}
                     </div>
 
                     <svg
@@ -122,6 +125,9 @@ export default function CustodyLogsList({ logs }: { logs: any[] }) {
                       <p className="text-sm font-bold text-gray-900">
                         {log.toOfficer} ({log.toLocation})
                       </p>
+                      {log.toOfficerId && (
+                        <p className="text-xs text-gray-500 mt-1">Officer ID: <span className="font-semibold">{log.toOfficerId}</span></p>
+                      )}
                     </div>
                   </div>
 

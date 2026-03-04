@@ -4,6 +4,7 @@ import { getServerSession } from "next-auth"
 import { connectDB } from "@/lib/db"
 import { CustodyLog } from "@/models/CustodyLog"
 import { Property } from "@/models/Property"
+import { User } from "@/models/User"
 import { authOptions } from "@/lib/auth"
 
 export async function GET(req: NextRequest) {
@@ -41,7 +42,9 @@ export async function POST(req: NextRequest) {
   const {
     propertyId,
     fromOfficer,
+    fromOfficerId,
     toOfficer,
+    toOfficerId,
     fromLocation,
     toLocation,
     purpose,
@@ -53,12 +56,34 @@ export async function POST(req: NextRequest) {
   if (
     !propertyId ||
     !fromOfficer ||
+    !fromOfficerId ||
     !fromLocation ||
     !toLocation ||
     !purpose ||
     !action
   ) {
     return NextResponse.json({ error: "Invalid data" }, { status: 400 })
+  }
+
+  // Validate fromOfficerId exists
+  const fromOfficerUser = await User.findOne({ officerId: fromOfficerId.toUpperCase() })
+  if (!fromOfficerUser) {
+    return NextResponse.json(
+      { error: `From Officer ID "${fromOfficerId}" not found in the system` },
+      { status: 400 }
+    )
+  }
+
+  // Validate toOfficerId if provided
+  let toOfficerUser = null
+  if (toOfficerId) {
+    toOfficerUser = await User.findOne({ officerId: toOfficerId.toUpperCase() })
+    if (!toOfficerUser) {
+      return NextResponse.json(
+        { error: `To Officer ID "${toOfficerId}" not found in the system` },
+        { status: 400 }
+      )
+    }
   }
 
   const property = await Property.findById(propertyId)
@@ -70,7 +95,9 @@ export async function POST(req: NextRequest) {
   const custody = await CustodyLog.create({
     propertyId,
     fromOfficer,
+    fromOfficerId: fromOfficerId.toUpperCase(),
     toOfficer,
+    toOfficerId: toOfficerId ? toOfficerId.toUpperCase() : undefined,
     fromLocation,
     toLocation,
     purpose,
@@ -89,6 +116,11 @@ export async function POST(req: NextRequest) {
       : action === "RECEIVED"
       ? "SEIZED"
       : property.status
+
+  // Update currentOfficer when property is transferred to another officer
+  if (toOfficerUser && (purpose === "TRANSFER" || action === "RECEIVED")) {
+    property.currentOfficer = toOfficerUser._id
+  }
 
   await property.save()
 

@@ -1,5 +1,6 @@
 import {connectDB} from "@/lib/db"
 import {Case} from "@/models/Case";
+import {Property} from "@/models/Property";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -15,13 +16,28 @@ export default async function DashboardPage() {
 
   await connectDB();
 
-  const totalCases = await Case.countDocuments({});
-  const pendingCases = await Case.countDocuments({ status: "PENDING" });
-  const disposedCases = await Case.countDocuments({ status: "DISPOSED" });
+  const userId = (session.user as any).id;
+  const userRole = (session.user as any).role;
+
+  let caseFilter: any = {};
+  if (userRole !== "ADMIN") {
+    const ownedCases = await Case.find({ reportingOfficer: userId }).select("_id").lean();
+    const transferredProps = await Property.find({ currentOfficer: userId }).select("caseId").lean();
+    const caseIdSet = new Set([
+      ...ownedCases.map((c: any) => c._id.toString()),
+      ...transferredProps.map((p: any) => p.caseId.toString()),
+    ]);
+    caseFilter = { _id: { $in: Array.from(caseIdSet) } };
+  }
+
+  const totalCases = await Case.countDocuments(caseFilter);
+  const pendingCases = await Case.countDocuments({ ...caseFilter, status: "PENDING" });
+  const disposedCases = await Case.countDocuments({ ...caseFilter, status: "DISPOSED" });
 
   const threshold = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
   const alertCases = await Case.countDocuments({
+    ...caseFilter,
     status: "PENDING",
     createdAt: { $lt: threshold }
   });

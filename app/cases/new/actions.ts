@@ -2,6 +2,7 @@
 
 import { connectDB } from "@/lib/db";
 import { Case } from "@/models/Case";
+import { User } from "@/models/User";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
@@ -22,6 +23,16 @@ export async function createCase(formData: {
     throw new Error("Unauthorized");
   }
   await connectDB();
+
+  // Validate investigatingOfficerId exists in DB
+  const officerExists = await User.findOne({
+    officerId: formData.investigatingOfficerId.toUpperCase(),
+  });
+  if (!officerExists) {
+    throw new Error(
+      `Officer ID "${formData.investigatingOfficerId}" not found in the system. Please enter a valid officer ID.`
+    );
+  }
 
   const newCase = await Case.create({
     policeStation: formData.policeStation,

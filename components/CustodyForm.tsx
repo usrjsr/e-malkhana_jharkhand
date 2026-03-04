@@ -12,7 +12,9 @@ export default function CustodyForm({
 }) {
   const [form, setForm] = useState({
     fromOfficer: "",
+    fromOfficerId: "",
     toOfficer: "",
+    toOfficerId: "",
     fromLocation: "",
     toLocation: "",
     purpose: "STORAGE",
@@ -41,7 +43,9 @@ export default function CustodyForm({
       await addCustodyLog({
         propertyId,
         fromOfficer: form.fromOfficer,
+        fromOfficerId: form.fromOfficerId,
         toOfficer: form.toOfficer,
+        toOfficerId: form.toOfficerId,
         fromLocation: form.fromLocation,
         toLocation: form.toLocation,
         purpose: form.purpose,
@@ -52,7 +56,9 @@ export default function CustodyForm({
 
       setForm({
         fromOfficer: "",
+        fromOfficerId: "",
         toOfficer: "",
+        toOfficerId: "",
         fromLocation: "",
         toLocation: "",
         purpose: "STORAGE",
@@ -95,6 +101,28 @@ export default function CustodyForm({
 
         <div>
           <label
+            htmlFor="fromOfficerId"
+            className="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            From Officer ID *
+          </label>
+          <input
+            id="fromOfficerId"
+            name="fromOfficerId"
+            placeholder="e.g., OFF001"
+            value={form.fromOfficerId}
+            onChange={handleChange}
+            className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+            required
+            disabled={loading}
+          />
+          <p className="text-xs text-gray-500 mt-1">Must be a valid officer ID registered in the system</p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label
             htmlFor="toOfficer"
             className="block text-sm font-semibold text-gray-700 mb-2"
           >
@@ -109,6 +137,25 @@ export default function CustodyForm({
             className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
             disabled={loading}
           />
+        </div>
+
+        <div>
+          <label
+            htmlFor="toOfficerId"
+            className="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            To Officer ID
+          </label>
+          <input
+            id="toOfficerId"
+            name="toOfficerId"
+            placeholder="e.g., OFF002"
+            value={form.toOfficerId}
+            onChange={handleChange}
+            className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+            disabled={loading}
+          />
+          <p className="text-xs text-gray-500 mt-1">Must be a valid officer ID if provided</p>
         </div>
       </div>
 

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useSession, signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useState } from "react";
 
 export default function Header() {
@@ -20,8 +20,16 @@ export default function Header() {
 
   const handleLogout = async () => {
     setIsLoading(true);
-    await signOut({ redirect: false });
-    router.push("/login");
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      // Clear NextAuth session cookies client-side
+      document.cookie = "next-auth.session-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      document.cookie = "__Secure-next-auth.session-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      router.push("/login");
+      router.refresh();
+    } catch {
+      setIsLoading(false);
+    }
   };
 
   return (

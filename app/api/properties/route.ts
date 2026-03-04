@@ -23,7 +23,17 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: "caseId is required" }, { status: 400 })
   }
 
-  const properties = await Property.find({ caseId }).sort({ createdAt: -1 })
+  // Filter properties by user visibility for non-ADMIN users
+  const isAdmin = session.user.role === "ADMIN"
+  const filter: any = { caseId }
+  if (!isAdmin) {
+    filter.$or = [
+      { seizingOfficer: session.user.id },
+      { currentOfficer: session.user.id },
+    ]
+  }
+
+  const properties = await Property.find(filter).sort({ createdAt: -1 })
 
   return NextResponse.json(properties)
 }

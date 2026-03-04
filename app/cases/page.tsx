@@ -1,5 +1,6 @@
 import {connectDB} from "@/lib/db"
 import {Case} from "@/models/Case"
+import {Property} from "@/models/Property"
 import Link from "next/link"
 import { redirect } from "next/navigation"
 import { getServerSession } from "next-auth"
@@ -14,7 +15,23 @@ export default async function CasesPage() {
 
   await connectDB()
 
-  const cases = await Case.find().sort({ createdAt: -1 })
+  const userId = (session.user as any).id
+  const userRole = (session.user as any).role
+
+  let cases
+  if (userRole === "ADMIN") {
+    cases = await Case.find().sort({ createdAt: -1 })
+  } else {
+    // Get cases created by user
+    const ownedCases = await Case.find({ reportingOfficer: userId }).select("_id").lean()
+    // Get cases where user has properties transferred to them
+    const transferredProps = await Property.find({ currentOfficer: userId }).select("caseId").lean()
+    const caseIdSet = new Set([
+      ...ownedCases.map((c: any) => c._id.toString()),
+      ...transferredProps.map((p: any) => p.caseId.toString()),
+    ])
+    cases = await Case.find({ _id: { $in: Array.from(caseIdSet) } }).sort({ createdAt: -1 })
+  }
 
   const totalCases = cases.length
   const pendingCases = cases.filter((c: any) => c.status === "PENDING").length

@@ -2,6 +2,7 @@ import {connectDB} from "@/lib/db";
 import {Case} from "@/models/Case";
 import {Property} from "@/models/Property";
 import {CustodyLog} from "@/models/CustodyLog";
+import {User} from "@/models/User";
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -25,7 +26,16 @@ export default async function CaseDetailPage({ params }: Props) {
   const caseData = await Case.findById(caseId);
   if (!caseData) notFound();
 
-  const properties = await Property.find({ caseId });
+  // Filter properties by user visibility for non-ADMIN users
+  const isAdmin = session.user.role === "ADMIN";
+  const propertyFilter: any = { caseId };
+  if (!isAdmin) {
+    propertyFilter.$or = [
+      { seizingOfficer: session.user.id },
+      { currentOfficer: session.user.id },
+    ];
+  }
+  const properties = await Property.find(propertyFilter);
 
   const logs = await CustodyLog.find({
     propertyId: { $in: properties.map(p => p._id) }

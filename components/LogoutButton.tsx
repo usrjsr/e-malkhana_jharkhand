@@ -1,14 +1,24 @@
 "use client";
 
-import { signOut } from "next-auth/react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function LogoutButton() {
   const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
 
   const handleLogout = async () => {
     setIsLoading(true);
-    await signOut({ callbackUrl: "/login" });
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+      // Clear NextAuth session cookie client-side
+      document.cookie = "next-auth.session-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      document.cookie = "__Secure-next-auth.session-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT";
+      router.push("/login");
+      router.refresh();
+    } catch {
+      setIsLoading(false);
+    }
   };
 
   return (

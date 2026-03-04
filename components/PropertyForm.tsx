@@ -9,6 +9,7 @@ export default function PropertyForm({ caseId }: { caseId: string }) {
 
   const [form, setForm] = useState({
     category: "",
+    customCategory: "",
     belongingTo: "UNKNOWN",
     natureOfProperty: "",
     quantity: "",
@@ -16,6 +17,24 @@ export default function PropertyForm({ caseId }: { caseId: string }) {
     storageLocation: "",
     description: "",
   });
+
+  const PROPERTY_CATEGORIES = [
+    "Electronics",
+    "Weapons/Arms",
+    "Narcotics/Drugs",
+    "Vehicles",
+    "Jewelry/Valuables",
+    "Documents",
+    "Cash/Currency",
+    "Clothing",
+    "Explosive Materials",
+    "Stolen Property",
+    "Counterfeit Items",
+    "Digital Evidence",
+    "Biological Evidence",
+    "Tools/Instruments",
+    "Other",
+  ];
 
   const [imageUrl, setImageUrl] = useState("");
   const [error, setError] = useState("");
@@ -76,7 +95,7 @@ export default function PropertyForm({ caseId }: { caseId: string }) {
     try {
       const result = await createProperty({
         caseId,
-        category: form.category,
+        category: form.category === "Other" ? form.customCategory : form.category,
         belongingTo: form.belongingTo,
         natureOfProperty: form.natureOfProperty,
         quantity: form.quantity,
@@ -272,18 +291,43 @@ export default function PropertyForm({ caseId }: { caseId: string }) {
                 >
                   Category of Property *
                 </label>
-                <input
+                <select
                   id="category"
                   name="category"
-                  type="text"
-                  placeholder="e.g., Electronics, Jewelry, Vehicle"
                   value={form.category}
                   onChange={handleChange}
                   className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
                   required
                   disabled={isLoading}
-                />
+                >
+                  <option value="">-- Select Category --</option>
+                  {PROPERTY_CATEGORIES.map((cat) => (
+                    <option key={cat} value={cat}>{cat}</option>
+                  ))}
+                </select>
               </div>
+
+              {form.category === "Other" && (
+                <div>
+                  <label
+                    htmlFor="customCategory"
+                    className="block text-sm font-semibold text-gray-700 mb-2"
+                  >
+                    Specify Category *
+                  </label>
+                  <input
+                    id="customCategory"
+                    name="customCategory"
+                    type="text"
+                    placeholder="Enter custom category"
+                    value={form.customCategory}
+                    onChange={handleChange}
+                    className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+                    required
+                    disabled={isLoading}
+                  />
+                </div>
+              )}
 
               <div>
                 <label

@@ -15,9 +15,22 @@ const CustodyLogSchema = new Schema(
       trim: true,
     },
 
+    fromOfficerId: {
+      type: String,
+      required: true,
+      trim: true,
+      uppercase: true,
+    },
+
     toOfficer: {
       type: String,
       trim: true,
+    },
+
+    toOfficerId: {
+      type: String,
+      trim: true,
+      uppercase: true,
     },
 
     fromLocation: {

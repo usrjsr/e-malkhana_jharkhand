@@ -16,8 +16,25 @@ export default async function ManageCasesPage() {
 
   await connectDB()
 
-  const cases = await Case.find().sort({ createdAt: -1 })
-  const properties = await Property.find()
+  const userId = (session.user as any).id
+  const userRole = (session.user as any).role
+
+  let cases
+  let properties
+  if (userRole === "ADMIN") {
+    cases = await Case.find().sort({ createdAt: -1 })
+    properties = await Property.find()
+  } else {
+    const ownedCases = await Case.find({ reportingOfficer: userId }).select("_id").lean()
+    const transferredProps = await Property.find({ currentOfficer: userId }).select("caseId").lean()
+    const caseIdSet = new Set([
+      ...ownedCases.map((c: any) => c._id.toString()),
+      ...transferredProps.map((p: any) => p.caseId.toString()),
+    ])
+    const caseIds = Array.from(caseIdSet)
+    cases = await Case.find({ _id: { $in: caseIds } }).sort({ createdAt: -1 })
+    properties = await Property.find({ caseId: { $in: caseIds } })
+  }
 
   const caseData = cases.map((caseItem: any) => {
     const caseProperties = properties.filter(

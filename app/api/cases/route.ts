@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server"
-import {connectDB} from "@/lib/db"
+import { connectDB } from "@/lib/db"
 import { Case } from "@/models/Case"
+import { Property } from "@/models/Property"
+import { User } from "@/models/User"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
 
@@ -13,14 +15,60 @@ export async function GET(req: NextRequest) {
 
   await connectDB()
 
+  const userId = (session.user as any).id
+  const userRole = (session.user as any).role
   const { searchParams } = new URL(req.url)
   const q = searchParams.get("q")?.trim()
   const status = searchParams.get("status")
+  const crimeNumber = searchParams.get("crimeNumber")?.trim()
+  const policeStation = searchParams.get("policeStation")?.trim()
+  const seizureDateFrom = searchParams.get("seizureDateFrom")
+  const seizureDateTo = searchParams.get("seizureDateTo")
+  const actAndLaw = searchParams.get("actAndLaw")?.trim()
+  const section = searchParams.get("section")?.trim()
+
+  // For non-admin users, restrict to cases they own or have properties transferred to them
+  let allowedCaseIds: string[] | null = null
+  if (userRole !== "ADMIN") {
+    const ownedCases = await Case.find({ reportingOfficer: userId }).select("_id").lean()
+    const transferredProps = await Property.find({ currentOfficer: userId }).select("caseId").lean()
+    const caseIdSet = new Set([
+      ...ownedCases.map((c: any) => c._id.toString()),
+      ...transferredProps.map((p: any) => p.caseId.toString()),
+    ])
+    allowedCaseIds = Array.from(caseIdSet)
+  }
 
   const filter: any = {}
 
+  if (allowedCaseIds) {
+    filter._id = { $in: allowedCaseIds }
+  }
+
   if (status && status !== "ALL") {
     filter.status = status.toUpperCase()
+  }
+
+  if (crimeNumber) {
+    filter.crimeNumber = new RegExp(crimeNumber, "i")
+  }
+
+  if (policeStation) {
+    filter.policeStation = new RegExp(policeStation, "i")
+  }
+
+  if (seizureDateFrom || seizureDateTo) {
+    filter.seizureDate = {}
+    if (seizureDateFrom) filter.seizureDate.$gte = new Date(seizureDateFrom)
+    if (seizureDateTo) filter.seizureDate.$lte = new Date(seizureDateTo)
+  }
+
+  if (actAndLaw) {
+    filter.actAndLaw = new RegExp(actAndLaw, "i")
+  }
+
+  if (section) {
+    filter.section = new RegExp(section, "i")
   }
 
   if (q) {
@@ -82,6 +130,15 @@ export async function POST(req: NextRequest) {
     !section
   ) {
     return NextResponse.json({ error: "Invalid data" }, { status: 400 })
+  }
+
+  // Validate investigatingOfficerId exists in DB
+  const officerExists = await User.findOne({ officerId: investigatingOfficerId.toUpperCase() })
+  if (!officerExists) {
+    return NextResponse.json(
+      { error: `Officer ID "${investigatingOfficerId}" not found in the system` },
+      { status: 400 }
+    )
   }
 
   const newCase = await Case.create({

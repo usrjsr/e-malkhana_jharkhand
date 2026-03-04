@@ -92,6 +92,12 @@ const propertySchema = new Schema(
       required: true,
     },
 
+    currentOfficer: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      index: true,
+    },
+
     lastMovementAt: {
       type: Date,
       default: Date.now,
@@ -104,9 +110,14 @@ const propertySchema = new Schema(
 propertySchema.index({ caseId: 1, serialNumber: 1 }, { sparse: true });
 
 propertySchema.pre("save", function () {
-  if (this.isNew && !this.propertyTag) {
-    const tail = this._id.toString().slice(-6).toUpperCase();
-    this.propertyTag = `PROP-${tail}`;
+  if (this.isNew) {
+    if (!this.propertyTag) {
+      const tail = this._id.toString().slice(-6).toUpperCase();
+      this.propertyTag = `PROP-${tail}`;
+    }
+    if (!this.currentOfficer && this.seizingOfficer) {
+      this.currentOfficer = this.seizingOfficer;
+    }
   }
 });
 
