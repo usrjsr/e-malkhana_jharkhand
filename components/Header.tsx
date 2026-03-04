@@ -19,8 +19,8 @@ export default function Header() {
     pathname.includes("/alerts");
 
   const handleLogout = async () => {
-    setIsLoading(true);
     try {
+      setIsLoading(true);
       await fetch("/api/auth/logout", { method: "POST" });
       // Clear NextAuth session cookies client-side
       document.cookie = "next-auth.session-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT";
