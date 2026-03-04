@@ -1,4 +1,5 @@
 import mongoose, { Schema, models, model } from "mongoose"
+import { unique } from "next/dist/build/utils"
 
 const UserSchema = new Schema(
   {
@@ -42,7 +43,9 @@ const UserSchema = new Schema(
       type: String,
       required: true,
       trim: true,
-      index: true
+      index: true,
+      unique: true,
+      lowercase: true
     },
 
     policeStation: {

@@ -31,10 +31,11 @@ export async function createUser(formData: {
     $or: [
       { username: formData.username.toLowerCase() },
       { email: formData.email.toLowerCase() },
+      { officerId: new RegExp(`^${formData.officerId}$`, 'i') },
     ],
   });
   if (existing) {
-    throw new Error("Username or email already exists");
+    throw new Error("Username, email, or officer ID already exists");
   }
 
   const hashedPassword = await bcrypt.hash(formData.password, 10);
@@ -45,7 +46,7 @@ export async function createUser(formData: {
     username: formData.username.toLowerCase(),
     password: hashedPassword,
     role: formData.role || "OFFICER",
-    officerId: formData.officerId,
+    officerId: formData.officerId.toLowerCase(),
     policeStation: formData.policeStation,
     status: "ACTIVE",
   });

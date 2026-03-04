@@ -27,12 +27,12 @@ export async function POST(req: NextRequest) {
     }
 
     const existedUser = await User.findOne({
-      $or: [{ username: username.toLowerCase() }, { email: email.toLowerCase() }],
+      $or: [{ username: username.toLowerCase() }, { email: email.toLowerCase() }, {officerId: new RegExp(`^${officerId}$`, 'i')}],
     })
 
     if (existedUser) {
       return NextResponse.json(
-        { error: "User with email or username already exists" },
+        { error: "Username, email, or officer ID already exists" },
         { status: 409 }
       )
     }
@@ -45,7 +45,7 @@ export async function POST(req: NextRequest) {
       username: username.toLowerCase(),
       password: hashedPassword,
       role: role || "OFFICER",
-      officerId,
+      officerId: officerId.toLowerCase(),
       policeStation,
       status: "ACTIVE",
     })
