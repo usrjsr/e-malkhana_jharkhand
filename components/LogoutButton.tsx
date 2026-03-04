@@ -1,11 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LogoutButton() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+
+  // ensure the button isn't stuck in loading mode if the component is reused
+  useEffect(() => {
+    setIsLoading(false);
+  }, []);
 
   const handleLogout = async () => {
     try {
@@ -15,7 +20,7 @@ export default function LogoutButton() {
       document.cookie = "next-auth.session-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT";
       document.cookie = "__Secure-next-auth.session-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT";
       router.push("/login");
-      router.refresh();
+      // no need to call router.refresh here, redirect will unmount this component
     } catch {
       setIsLoading(false);
     }

@@ -3,13 +3,18 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const { data: session } = useSession();
   const [isLoading, setIsLoading] = useState(false);
+
+  // reset the loading indicator any time we navigate or the session updates
+  useEffect(() => {
+    setIsLoading(false);
+  }, [pathname, session]);
 
   const isDashboard =
     pathname.includes("/dashboard") ||
@@ -26,7 +31,7 @@ export default function Header() {
       document.cookie = "next-auth.session-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT";
       document.cookie = "__Secure-next-auth.session-token=; Path=/; Expires=Thu, 01 Jan 1970 00:00:00 GMT";
       router.push("/login");
-      router.refresh();
+      // router.refresh(); // no need to refresh after a hard redirect
     } catch {
       setIsLoading(false);
     }
