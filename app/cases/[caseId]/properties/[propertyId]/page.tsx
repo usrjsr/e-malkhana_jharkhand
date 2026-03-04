@@ -130,17 +130,29 @@ export default async function PropertyDetailPage({ params }: Props) {
           </div>
 
           <div className="space-y-6">
-            {property.itemImage && (
+            {property.itemImage && property.itemImage.length > 0 && (
               <div className="bg-white border-2 border-gray-300">
                 <div className="bg-[#1e3a8a] text-white px-6 py-4">
-                  <h3 className="text-xl font-bold">Property Image</h3>
+                  <h3 className="text-xl font-bold">
+                    Property Images ({Array.isArray(property.itemImage) ? property.itemImage.length : 1})
+                  </h3>
                 </div>
-                <div className="p-4">
-                  <img
-                    src={property.itemImage}
-                    alt="Property"
-                    className="w-full border-2 border-gray-300 object-cover max-h-64"
-                  />
+                <div className="p-4 space-y-3">
+                  {(Array.isArray(property.itemImage)
+                    ? property.itemImage
+                    : [property.itemImage]
+                  ).map((img: string, idx: number) => (
+                    <div key={idx} className="relative">
+                      <img
+                        src={img}
+                        alt={`Property image ${idx + 1}`}
+                        className="w-full border-2 border-gray-300 object-cover max-h-64 rounded"
+                      />
+                      <span className="absolute top-2 left-2 bg-black/60 text-white text-xs px-2 py-1 rounded">
+                        {idx + 1} / {Array.isArray(property.itemImage) ? property.itemImage.length : 1}
+                      </span>
+                    </div>
+                  ))}
                 </div>
               </div>
             )}

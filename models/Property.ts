@@ -64,8 +64,12 @@ const propertySchema = new Schema(
     },
 
     itemImage: {
-      type: String,
+      type: [String],
       required: true,
+      validate: {
+        validator: (v: string[]) => v.length > 0,
+        message: "At least one property image is required",
+      },
     },
 
     qrCode: {

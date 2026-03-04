@@ -15,7 +15,7 @@ export async function createProperty(data: {
   units: string;
   storageLocation: string;
   description: string;
-  itemImage: string;
+  itemImages: string[];
 }) {
   const session = await getServerSession(authOptions);
   if (!session) {
@@ -33,7 +33,7 @@ export async function createProperty(data: {
     units: data.units,
     storageLocation: data.storageLocation,
     description: data.description,
-    itemImage: data.itemImage,
+    itemImage: data.itemImages,
     seizingOfficer: (session.user as any).id,
   });
 

@@ -36,7 +36,7 @@ export default function PropertyForm({ caseId }: { caseId: string }) {
     "Other",
   ];
 
-  const [imageUrl, setImageUrl] = useState("");
+  const [imageUrls, setImageUrls] = useState<string[]>([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
@@ -50,35 +50,46 @@ export default function PropertyForm({ caseId }: { caseId: string }) {
   }
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
     setIsUploading(true);
     setError("");
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
+      const uploadPromises = Array.from(files).map(async (file) => {
+        const formData = new FormData();
+        formData.append("file", file);
 
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!res.ok) {
+          const data = await res.json();
+          throw new Error(data.error || "Upload failed");
+        }
+
+        const data = await res.json();
+        return data.url as string;
       });
 
-      if (!res.ok) {
-        const data = await res.json();
-        throw new Error(data.error || "Upload failed");
-      }
-
-      const data = await res.json();
-      setImageUrl(data.url);
+      const urls = await Promise.all(uploadPromises);
+      setImageUrls((prev) => [...prev, ...urls]);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Image upload failed. Please try again."
       );
     } finally {
       setIsUploading(false);
+      // Reset the input so the same files can be selected again
+      e.target.value = "";
     }
+  }
+
+  function removeImage(index: number) {
+    setImageUrls((prev) => prev.filter((_, i) => i !== index));
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -86,8 +97,8 @@ export default function PropertyForm({ caseId }: { caseId: string }) {
     setError("");
     setIsLoading(true);
 
-    if (!imageUrl) {
-      setError("Please upload a property image before submitting");
+    if (imageUrls.length === 0) {
+      setError("Please upload at least one property image before submitting");
       setIsLoading(false);
       return;
     }
@@ -102,7 +113,7 @@ export default function PropertyForm({ caseId }: { caseId: string }) {
         units: form.units,
         storageLocation: form.storageLocation,
         description: form.description,
-        itemImage: imageUrl,
+        itemImages: imageUrls,
       });
 
       router.replace(`/cases/${caseId}/properties/${result.propertyId}`);
@@ -161,106 +172,97 @@ export default function PropertyForm({ caseId }: { caseId: string }) {
             </h4>
 
             <div className="space-y-4">
-              {imageUrl ? (
-                <div className="flex items-start gap-4">
-                  <img
-                    src={imageUrl}
-                    alt="Uploaded property"
-                    className="w-48 h-48 object-cover border-2 border-gray-300 rounded-lg shadow-md"
-                  />
-                  <div className="flex-1">
-                    <div className="bg-[#d4edda] border-l-4 border-[#28a745] p-4 rounded-r-lg shadow-sm">
-                      <div className="flex items-start">
-                        <svg
-                          className="w-6 h-6 text-[#155724] mr-3 flex-shrink-0"
-                          fill="currentColor"
-                          viewBox="0 0 20 20"
+              {/* Uploaded Images Gallery */}
+              {imageUrls.length > 0 && (
+                <div>
+                  <p className="text-sm font-semibold text-gray-700 mb-3">
+                    Uploaded Images ({imageUrls.length})
+                  </p>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                    {imageUrls.map((url, index) => (
+                      <div key={index} className="relative group">
+                        <img
+                          src={url}
+                          alt={`Property image ${index + 1}`}
+                          className="w-full h-32 object-cover border-2 border-gray-300 rounded-lg shadow-md"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => removeImage(index)}
+                          className="absolute top-1 right-1 bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs font-bold opacity-0 group-hover:opacity-100 transition-opacity shadow-md hover:bg-red-700"
                         >
-                          <path
-                            fillRule="evenodd"
-                            d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                        <div>
-                          <p className="text-sm text-[#155724] font-bold">
-                            Image uploaded successfully!
-                          </p>
-                          <p className="text-xs text-[#155724] mt-1">
-                            You can now proceed to fill property details
-                          </p>
-                        </div>
+                          ✕
+                        </button>
+                        <span className="absolute bottom-1 left-1 bg-black/60 text-white text-xs px-2 py-0.5 rounded">
+                          {index + 1}
+                        </span>
                       </div>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setImageUrl("")}
-                      className="mt-3 text-sm text-[#dc3545] hover:text-[#c82333] font-semibold transition-colors"
-                    >
-                      ✕ Remove and upload different image
-                    </button>
+                    ))}
                   </div>
                 </div>
-              ) : (
-                <div className="border-2 border-dashed border-gray-300 p-10 text-center bg-white rounded-lg hover:border-[#1e3a8a] transition-colors">
-                  <svg
-                    className="w-16 h-16 text-gray-400 mx-auto mb-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <p className="text-gray-700 font-bold mb-2">
-                    Upload Property Image *
-                  </p>
-                  <p className="text-sm text-gray-500 mb-4">
-                    Click below to select and upload a clear image of the seized
-                    property (JPEG, PNG, WebP — max 10MB)
-                  </p>
-                  <label className="inline-block cursor-pointer bg-[#1e3a8a] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#1e40af] transition-colors">
-                    {isUploading ? (
-                      <span className="flex items-center gap-2">
-                        <svg
-                          className="animate-spin h-5 w-5 text-white"
-                          xmlns="http://www.w3.org/2000/svg"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                        >
-                          <circle
-                            className="opacity-25"
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="currentColor"
-                            strokeWidth="4"
-                          />
-                          <path
-                            className="opacity-75"
-                            fill="currentColor"
-                            d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                          />
-                        </svg>
-                        Uploading...
-                      </span>
-                    ) : (
-                      "Choose Image"
-                    )}
-                    <input
-                      type="file"
-                      accept="image/jpeg,image/png,image/webp"
-                      onChange={handleImageUpload}
-                      className="hidden"
-                      disabled={isUploading}
-                    />
-                  </label>
-                </div>
               )}
+
+              {/* Upload Button - always visible to add more */}
+              <div className="border-2 border-dashed border-gray-300 p-8 text-center bg-white rounded-lg hover:border-[#1e3a8a] transition-colors">
+                <svg
+                  className="w-12 h-12 text-gray-400 mx-auto mb-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                <p className="text-gray-700 font-bold mb-1">
+                  {imageUrls.length === 0
+                    ? "Upload Property Images *"
+                    : "Add More Images"}
+                </p>
+                <p className="text-sm text-gray-500 mb-4">
+                  Select one or multiple images (JPEG, PNG, WebP — max 10MB each)
+                </p>
+                <label className="inline-block cursor-pointer bg-[#1e3a8a] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#1e40af] transition-colors">
+                  {isUploading ? (
+                    <span className="flex items-center gap-2">
+                      <svg
+                        className="animate-spin h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      Uploading...
+                    </span>
+                  ) : (
+                    "Choose Images"
+                  )}
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    multiple
+                    onChange={handleImageUpload}
+                    className="hidden"
+                    disabled={isUploading}
+                  />
+                </label>
+              </div>
             </div>
           </div>
 
@@ -542,7 +544,7 @@ export default function PropertyForm({ caseId }: { caseId: string }) {
           <div className="flex gap-4 pt-4">
             <button
               type="submit"
-              disabled={isLoading || !imageUrl}
+              disabled={isLoading || imageUrls.length === 0}
               className="flex-1 bg-[#1e3a8a] text-white py-3 rounded-lg font-bold hover:bg-[#1e40af] transition-all duration-300 border-2 border-[#1e3a8a] disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
             >
               {isLoading ? (

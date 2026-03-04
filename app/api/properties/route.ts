@@ -58,7 +58,7 @@ export async function POST(req: NextRequest) {
     units,
     storageLocation,
     description,
-    itemImage,
+    itemImages,
   } = body
 
   if (
@@ -70,9 +70,11 @@ export async function POST(req: NextRequest) {
     !units ||
     !storageLocation ||
     !description ||
-    !itemImage
+    !itemImages ||
+    !Array.isArray(itemImages) ||
+    itemImages.length === 0
   ) {
-    return NextResponse.json({ error: "Invalid data" }, { status: 400 })
+    return NextResponse.json({ error: "Invalid data. At least one image is required." }, { status: 400 })
   }
 
   const caseExists = await Case.findById(caseId)
@@ -92,7 +94,7 @@ export async function POST(req: NextRequest) {
     units,
     storageLocation,
     description,
-    itemImage,
+    itemImage: itemImages,
     qrCode,
     seizingOfficer: session.user.id,
   })
