@@ -25,6 +25,8 @@ export async function POST(req: NextRequest) {
     disposalDate,
     disposalAuthority,
     remarks,
+    disposalPhoto,
+    courtOrderPhoto,
   } = body
 
   if (
@@ -55,6 +57,8 @@ export async function POST(req: NextRequest) {
     disposalDate: parsedDate,
     disposalAuthority,
     remarks,
+    disposalPhoto: disposalPhoto || undefined,
+    courtOrderPhoto: courtOrderPhoto || undefined,
     handledBy: (session.user as any).id,
   })
 

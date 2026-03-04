@@ -14,6 +14,8 @@ export async function disposeProperty(formData: {
   disposalDate: string;
   disposalAuthority: string;
   remarks: string;
+  disposalPhoto: string;
+  courtOrderPhoto: string;
 }) {
   const session = await getServerSession(authOptions);
   if (!session) {
@@ -38,6 +40,8 @@ export async function disposeProperty(formData: {
     disposalDate: new Date(formData.disposalDate),
     disposalAuthority: formData.disposalAuthority,
     remarks: formData.remarks,
+    disposalPhoto: formData.disposalPhoto || undefined,
+    courtOrderPhoto: formData.courtOrderPhoto || undefined,
     handledBy: (session.user as any).id,
   });
 

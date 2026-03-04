@@ -1,6 +1,7 @@
 import { connectDB } from "@/lib/db"
 import { Property } from "@/models/Property"
 import { Case } from "@/models/Case"
+import { Disposal } from "@/models/Disposal"
 import Link from "next/link"
 import { redirect, notFound } from "next/navigation"
 import { getServerSession } from "next-auth"
@@ -32,6 +33,12 @@ export default async function PropertyDetailPage({ params }: Props) {
   const caseData = await Case.findById(caseId)
   if (!caseData) {
     notFound()
+  }
+
+  // Fetch disposal record if property is disposed
+  let disposal = null;
+  if (property.status === "DISPOSED") {
+    disposal = await Disposal.findOne({ propertyId: property._id }).lean();
   }
 
   return (
@@ -213,18 +220,92 @@ export default async function PropertyDetailPage({ params }: Props) {
         </div>
 
         {property.status === "DISPOSED" && (
-          <div className="bg-[#d4edda] border-l-4 border-[#28a745] p-4">
-            <div className="flex items-start">
-              <svg className="w-6 h-6 text-[#155724] mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
-              </svg>
-              <div>
-                <h4 className="font-bold text-[#155724] mb-1">Property Disposed</h4>
-                <p className="text-sm text-[#155724]">
-                  This property has been disposed as per court orders or department procedures.
-                </p>
+          <div className="space-y-6">
+            <div className="bg-[#d4edda] border-l-4 border-[#28a745] p-4">
+              <div className="flex items-start">
+                <svg className="w-6 h-6 text-[#155724] mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                </svg>
+                <div>
+                  <h4 className="font-bold text-[#155724] mb-1">Property Disposed</h4>
+                  <p className="text-sm text-[#155724]">
+                    This property has been disposed as per court orders or department procedures.
+                  </p>
+                </div>
               </div>
             </div>
+
+            {disposal && (
+              <div className="bg-white border-2 border-gray-300">
+                <div className="bg-[#28a745] text-white px-6 py-4">
+                  <h3 className="text-xl font-bold">Disposal Details</h3>
+                </div>
+                <div className="p-6 space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-[#f8f9fa] border-l-4 border-[#28a745] p-4">
+                      <p className="text-sm font-semibold text-gray-600 mb-1">Disposal Type</p>
+                      <p className="text-lg font-bold text-[#28a745]">{(disposal as any).disposalType}</p>
+                    </div>
+                    <div className="bg-[#f8f9fa] border-l-4 border-[#28a745] p-4">
+                      <p className="text-sm font-semibold text-gray-600 mb-1">Court Order Reference</p>
+                      <p className="text-lg font-bold text-[#28a745]">{(disposal as any).courtOrderReference}</p>
+                    </div>
+                    <div className="bg-[#f8f9fa] border-l-4 border-[#28a745] p-4">
+                      <p className="text-sm font-semibold text-gray-600 mb-1">Disposal Date</p>
+                      <p className="text-lg font-bold text-[#28a745]">{new Date((disposal as any).disposalDate).toLocaleDateString('en-IN')}</p>
+                    </div>
+                    <div className="bg-[#f8f9fa] border-l-4 border-[#28a745] p-4">
+                      <p className="text-sm font-semibold text-gray-600 mb-1">Disposal Authority</p>
+                      <p className="text-lg font-bold text-[#28a745]">{(disposal as any).disposalAuthority}</p>
+                    </div>
+                  </div>
+                  {(disposal as any).remarks && (
+                    <div className="bg-[#f8f9fa] border-l-4 border-[#28a745] p-4">
+                      <p className="text-sm font-semibold text-gray-600 mb-2">Remarks</p>
+                      <p className="text-gray-900">{(disposal as any).remarks}</p>
+                    </div>
+                  )}
+
+                  {/* Disposal Photos */}
+                  {((disposal as any).disposalPhoto || (disposal as any).courtOrderPhoto) && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                      {(disposal as any).disposalPhoto && (
+                        <div className="bg-[#f8f9fa] border-2 border-gray-200 rounded-lg overflow-hidden">
+                          <div className="bg-[#28a745] text-white px-4 py-2">
+                            <p className="text-sm font-bold">Disposal Photo</p>
+                          </div>
+                          <div className="p-3">
+                            <a href={(disposal as any).disposalPhoto} target="_blank" rel="noopener noreferrer">
+                              <img
+                                src={(disposal as any).disposalPhoto}
+                                alt="Disposal photo"
+                                className="w-full object-cover max-h-64 border border-gray-300 rounded hover:opacity-90 transition-opacity cursor-pointer"
+                              />
+                            </a>
+                          </div>
+                        </div>
+                      )}
+                      {(disposal as any).courtOrderPhoto && (
+                        <div className="bg-[#f8f9fa] border-2 border-gray-200 rounded-lg overflow-hidden">
+                          <div className="bg-[#1e3a8a] text-white px-4 py-2">
+                            <p className="text-sm font-bold">Court Order Photo</p>
+                          </div>
+                          <div className="p-3">
+                            <a href={(disposal as any).courtOrderPhoto} target="_blank" rel="noopener noreferrer">
+                              <img
+                                src={(disposal as any).courtOrderPhoto}
+                                alt="Court order reference"
+                                className="w-full object-cover max-h-64 border border-gray-300 rounded hover:opacity-90 transition-opacity cursor-pointer"
+                              />
+                            </a>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
         )}
 

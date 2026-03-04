@@ -37,6 +37,16 @@ const disposalSchema = new Schema(
       trim: true,
     },
 
+    disposalPhoto: {
+      type: String,
+      trim: true,
+    },
+
+    courtOrderPhoto: {
+      type: String,
+      trim: true,
+    },
+
     handledBy: {
       type: Schema.Types.ObjectId,
       ref: "User",
