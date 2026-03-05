@@ -20,6 +20,7 @@ export default function UserForm() {
 
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -31,6 +32,19 @@ export default function UserForm() {
     e.preventDefault();
     setError("");
     setIsLoading(true);
+
+    const newFieldErrors: Record<string, string> = {};
+    const requiredFields = ['fullName', 'email', 'username', 'password', 'confirmPassword', 'officerId', 'policeStation', 'role'];
+    requiredFields.forEach(field => {
+      if (!form[field as keyof typeof form].toString().trim()) {
+        newFieldErrors[field] = "Fill this field";
+      }
+    });
+    setFieldErrors(newFieldErrors);
+    if (Object.keys(newFieldErrors).length > 0) {
+      setIsLoading(false);
+      return;
+    }
 
     if (form.password.length < 8) {
       setError("Password must be at least 8 characters long");
@@ -94,10 +108,11 @@ export default function UserForm() {
               placeholder="Enter full name"
               value={form.fullName}
               onChange={handleChange}
-              className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
+              className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.fullName ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
               required
               disabled={isLoading}
             />
+            {fieldErrors.fullName && <p className="text-red-500 text-sm mt-1">{fieldErrors.fullName}</p>}
           </div>
 
           <div>
@@ -114,10 +129,11 @@ export default function UserForm() {
               placeholder="Enter email address"
               value={form.email}
               onChange={handleChange}
-              className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
+              className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.email ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
               required
               disabled={isLoading}
             />
+            {fieldErrors.email && <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>}
           </div>
 
           <div>
@@ -134,10 +150,11 @@ export default function UserForm() {
               placeholder="Enter username (3-20 characters)"
               value={form.username}
               onChange={handleChange}
-              className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
+              className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.username ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
               required
               disabled={isLoading}
             />
+            {fieldErrors.username && <p className="text-red-500 text-sm mt-1">{fieldErrors.username}</p>}
           </div>
 
           <div>
@@ -154,10 +171,11 @@ export default function UserForm() {
               placeholder="Enter officer ID"
               value={form.officerId}
               onChange={handleChange}
-              className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
+              className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.officerId ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
               required
               disabled={isLoading}
             />
+            {fieldErrors.officerId && <p className="text-red-500 text-sm mt-1">{fieldErrors.officerId}</p>}
           </div>
 
           <div>
@@ -174,10 +192,11 @@ export default function UserForm() {
               placeholder="Enter password (min 8 characters)"
               value={form.password}
               onChange={handleChange}
-              className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
+              className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.password ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
               required
               disabled={isLoading}
             />
+            {fieldErrors.password && <p className="text-red-500 text-sm mt-1">{fieldErrors.password}</p>}
           </div>
 
           <div>
@@ -194,10 +213,11 @@ export default function UserForm() {
               placeholder="Re-enter password"
               value={form.confirmPassword}
               onChange={handleChange}
-              className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
+              className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.confirmPassword ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
               required
               disabled={isLoading}
             />
+            {fieldErrors.confirmPassword && <p className="text-red-500 text-sm mt-1">{fieldErrors.confirmPassword}</p>}
           </div>
 
           <div>
@@ -214,10 +234,11 @@ export default function UserForm() {
               placeholder="Enter police station"
               value={form.policeStation}
               onChange={handleChange}
-              className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
+              className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.policeStation ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
               required
               disabled={isLoading}
             />
+            {fieldErrors.policeStation && <p className="text-red-500 text-sm mt-1">{fieldErrors.policeStation}</p>}
           </div>
 
           <div>
@@ -232,7 +253,7 @@ export default function UserForm() {
               name="role"
               value={form.role}
               onChange={handleChange}
-              className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
+              className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.role ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
               required
               disabled={isLoading}
             >
@@ -240,6 +261,7 @@ export default function UserForm() {
               <option value="ADMIN">Admin</option>
               <option value="CLERK">Clerk</option>
             </select>
+            {fieldErrors.role && <p className="text-red-500 text-sm mt-1">{fieldErrors.role}</p>}
           </div>
         </div>
 

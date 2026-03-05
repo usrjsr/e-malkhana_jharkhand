@@ -25,6 +25,7 @@ export default function CustodyForm({
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   function handleChange(
     e: React.ChangeEvent<
@@ -38,6 +39,37 @@ export default function CustodyForm({
     e.preventDefault();
     setError("");
     setLoading(true);
+
+    const newFieldErrors: Record<string, string> = {};
+    if (!form.fromOfficer.trim()) {
+      newFieldErrors.fromOfficer = "Fill this field";
+    }
+    if (!form.fromOfficerId.trim()) {
+      newFieldErrors.fromOfficerId = "Fill this field";
+    }
+    if (!form.fromLocation.trim()) {
+      newFieldErrors.fromLocation = "Fill this field";
+    }
+    if (!form.toLocation.trim()) {
+      newFieldErrors.toLocation = "Fill this field";
+    }
+    if (!form.purpose.trim()) {
+      newFieldErrors.purpose = "Fill this field";
+    }
+    if (!form.action.trim()) {
+      newFieldErrors.action = "Fill this field";
+    }
+    if (!form.movementTimestamp.trim()) {
+      newFieldErrors.movementTimestamp = "Fill this field";
+    }
+    if (!form.remarks.trim()) {
+      newFieldErrors.remarks = "Fill this field";
+    }
+    setFieldErrors(newFieldErrors);
+    if (Object.keys(newFieldErrors).length > 0) {
+      setLoading(false);
+      return;
+    }
 
     try {
       await addCustodyLog({
@@ -93,10 +125,11 @@ export default function CustodyForm({
             placeholder="e.g., Inspector Sharma"
             value={form.fromOfficer}
             onChange={handleChange}
-            className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+            className={`w-full border-2 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black ${fieldErrors.fromOfficer ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
             required
             disabled={loading}
           />
+          {fieldErrors.fromOfficer && <p className="text-red-500 text-sm mt-1">{fieldErrors.fromOfficer}</p>}
         </div>
 
         <div>
@@ -112,10 +145,11 @@ export default function CustodyForm({
             placeholder="e.g., OFF001"
             value={form.fromOfficerId}
             onChange={handleChange}
-            className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+            className={`w-full border-2 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black ${fieldErrors.fromOfficerId ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
             required
             disabled={loading}
           />
+          {fieldErrors.fromOfficerId && <p className="text-red-500 text-sm mt-1">{fieldErrors.fromOfficerId}</p>}
           <p className="text-xs text-gray-500 mt-1">Must be a valid officer ID registered in the system</p>
         </div>
       </div>
@@ -134,7 +168,7 @@ export default function CustodyForm({
             placeholder="e.g., Sub-Inspector Verma"
             value={form.toOfficer}
             onChange={handleChange}
-            className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+            className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black"
             disabled={loading}
           />
         </div>
@@ -152,7 +186,7 @@ export default function CustodyForm({
             placeholder="e.g., OFF002"
             value={form.toOfficerId}
             onChange={handleChange}
-            className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+            className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black"
             disabled={loading}
           />
           <p className="text-xs text-gray-500 mt-1">Must be a valid officer ID if provided</p>
@@ -173,10 +207,11 @@ export default function CustodyForm({
             placeholder="e.g., Malkhana Room 3"
             value={form.fromLocation}
             onChange={handleChange}
-            className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+            className={`w-full border-2 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black ${fieldErrors.fromLocation ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
             required
             disabled={loading}
           />
+          {fieldErrors.fromLocation && <p className="text-red-500 text-sm mt-1">{fieldErrors.fromLocation}</p>}
         </div>
 
         <div>
@@ -192,10 +227,11 @@ export default function CustodyForm({
             placeholder="e.g., Court / FSL Lab"
             value={form.toLocation}
             onChange={handleChange}
-            className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+            className={`w-full border-2 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black ${fieldErrors.toLocation ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
             required
             disabled={loading}
           />
+          {fieldErrors.toLocation && <p className="text-red-500 text-sm mt-1">{fieldErrors.toLocation}</p>}
         </div>
       </div>
 
@@ -212,7 +248,7 @@ export default function CustodyForm({
           name="purpose"
           value={form.purpose}
           onChange={handleChange}
-          className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+          className={`w-full border-2 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black ${fieldErrors.purpose ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
           required
           disabled={loading}
         >
@@ -224,6 +260,7 @@ export default function CustodyForm({
           <option value="DISPOSAL">Disposal</option>
           <option value="RELEASE">Release</option>
         </select>
+        {fieldErrors.purpose && <p className="text-red-500 text-sm mt-1">{fieldErrors.purpose}</p>}
       </div>
 
       <div>
@@ -238,7 +275,7 @@ export default function CustodyForm({
           name="action"
           value={form.action}
           onChange={handleChange}
-          className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+          className={`w-full border-2 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black ${fieldErrors.action ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
           required
           disabled={loading}
         >
@@ -247,6 +284,7 @@ export default function CustodyForm({
           <option value="DISPOSED">Disposed</option>
           <option value="RELEASED">Released</option>
         </select>
+        {fieldErrors.action && <p className="text-red-500 text-sm mt-1">{fieldErrors.action}</p>}
       </div>
       </div>
 
@@ -263,10 +301,11 @@ export default function CustodyForm({
           name="movementTimestamp"
           value={form.movementTimestamp}
           onChange={handleChange}
-          className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+          className={`w-full border-2 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black ${fieldErrors.movementTimestamp ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
           required
           disabled={loading}
         />
+        {fieldErrors.movementTimestamp && <p className="text-red-500 text-sm mt-1">{fieldErrors.movementTimestamp}</p>}
       </div>
 
       <div>
@@ -283,10 +322,11 @@ export default function CustodyForm({
           value={form.remarks}
           onChange={handleChange}
           rows={3}
-          className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 resize-none transition-all duration-200"
+          className={`w-full border-2 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 resize-none transition-all duration-200 text-black ${fieldErrors.remarks ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
           required
           disabled={loading}
         />
+        {fieldErrors.remarks && <p className="text-red-500 text-sm mt-1">{fieldErrors.remarks}</p>}
       </div>
 
       {error && (
