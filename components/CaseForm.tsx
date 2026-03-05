@@ -22,6 +22,7 @@ export default function CaseForm() {
 
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   function handleChange(
     e: React.ChangeEvent<
@@ -35,6 +36,19 @@ export default function CaseForm() {
     e.preventDefault();
     setError("");
     setIsLoading(true);
+
+    const newFieldErrors: Record<string, string> = {};
+    const requiredFields = ['policeStation', 'investigatingOfficerName', 'investigatingOfficerId', 'crimeNumber', 'crimeYear', 'firDate', 'seizureDate', 'actAndLaw', 'section'];
+    requiredFields.forEach(field => {
+      if (!form[field as keyof typeof form].toString().trim()) {
+        newFieldErrors[field] = "Fill this field";
+      }
+    });
+    setFieldErrors(newFieldErrors);
+    if (Object.keys(newFieldErrors).length > 0) {
+      setIsLoading(false);
+      return;
+    }
 
     if (new Date(form.firDate) > new Date()) {
       setError("Date of FIR cannot be in the future");
@@ -93,10 +107,11 @@ export default function CaseForm() {
                 placeholder="Enter police station name"
                 value={form.policeStation}
                 onChange={handleChange}
-                className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
+                className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.policeStation ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
                 required
                 disabled={isLoading}
               />
+              {fieldErrors.policeStation && <p className="text-red-500 text-sm mt-1">{fieldErrors.policeStation}</p>}
             </div>
 
             <div>
@@ -113,7 +128,7 @@ export default function CaseForm() {
                 placeholder="Enter station address"
                 value={form.stationAddress}
                 onChange={handleChange}
-                className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
+                className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a] text-black"
                 disabled={isLoading}
               />
             </div>
@@ -132,10 +147,11 @@ export default function CaseForm() {
                 placeholder="Enter officer name"
                 value={form.investigatingOfficerName}
                 onChange={handleChange}
-                className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
+                className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.investigatingOfficerName ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
                 required
                 disabled={isLoading}
               />
+              {fieldErrors.investigatingOfficerName && <p className="text-red-500 text-sm mt-1">{fieldErrors.investigatingOfficerName}</p>}
             </div>
 
             <div className="md:col-span-2">
@@ -152,10 +168,11 @@ export default function CaseForm() {
                 placeholder="Enter officer ID number"
                 value={form.investigatingOfficerId}
                 onChange={handleChange}
-                className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
+                className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.investigatingOfficerId ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
                 required
                 disabled={isLoading}
               />
+              {fieldErrors.investigatingOfficerId && <p className="text-red-500 text-sm mt-1">{fieldErrors.investigatingOfficerId}</p>}
             </div>
           </div>
         </div>
@@ -178,10 +195,11 @@ export default function CaseForm() {
                 placeholder="Enter crime number"
                 value={form.crimeNumber}
                 onChange={handleChange}
-                className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
+                className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.crimeNumber ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
                 required
                 disabled={isLoading}
               />
+              {fieldErrors.crimeNumber && <p className="text-red-500 text-sm mt-1">{fieldErrors.crimeNumber}</p>}
             </div>
 
             <div>
@@ -196,7 +214,7 @@ export default function CaseForm() {
                 name="crimeYear"
                 value={form.crimeYear}
                 onChange={handleChange}
-                className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
+                className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.crimeYear ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
                 required
                 disabled={isLoading}
               >
@@ -209,6 +227,7 @@ export default function CaseForm() {
                   </option>
                 ))}
               </select>
+              {fieldErrors.crimeYear && <p className="text-red-500 text-sm mt-1">{fieldErrors.crimeYear}</p>}
             </div>
 
             <div>
@@ -225,10 +244,11 @@ export default function CaseForm() {
                 value={form.firDate}
                 onChange={handleChange}
                 max={new Date().toISOString().split("T")[0]}
-                className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
+                className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.firDate ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
                 required
                 disabled={isLoading}
               />
+              {fieldErrors.firDate && <p className="text-red-500 text-sm mt-1">{fieldErrors.firDate}</p>}
             </div>
 
             <div>
@@ -245,10 +265,11 @@ export default function CaseForm() {
                 value={form.seizureDate}
                 onChange={handleChange}
                 max={new Date().toISOString().split("T")[0]}
-                className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
+                className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.seizureDate ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
                 required
                 disabled={isLoading}
               />
+              {fieldErrors.seizureDate && <p className="text-red-500 text-sm mt-1">{fieldErrors.seizureDate}</p>}
             </div>
           </div>
         </div>
@@ -271,10 +292,11 @@ export default function CaseForm() {
                 placeholder="e.g., Indian Penal Code, NDPS Act, etc."
                 value={form.actAndLaw}
                 onChange={handleChange}
-                className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a]"
+                className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.actAndLaw ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
                 required
                 disabled={isLoading}
               />
+              {fieldErrors.actAndLaw && <p className="text-red-500 text-sm mt-1">{fieldErrors.actAndLaw}</p>}
             </div>
 
             <div>
@@ -291,10 +313,11 @@ export default function CaseForm() {
                 value={form.section}
                 onChange={handleChange}
                 rows={3}
-                className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a] resize-none"
+                className={`w-full border-2 px-4 py-2 focus:outline-none resize-none text-black ${fieldErrors.section ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
                 required
                 disabled={isLoading}
               />
+              {fieldErrors.section && <p className="text-red-500 text-sm mt-1">{fieldErrors.section}</p>}
             </div>
           </div>
         </div>
