@@ -19,15 +19,20 @@ export default function LinkPropertyForm({
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [success, setSuccess] = useState("")
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError("")
     setSuccess("")
 
+    const newFieldErrors: Record<string, string> = {};
     if (!selectedCaseId) {
-      setError("Please select a case")
-      return
+      newFieldErrors.caseId = "Fill this field";
+    }
+    setFieldErrors(newFieldErrors);
+    if (Object.keys(newFieldErrors).length > 0) {
+      return;
     }
 
     setIsLoading(true)
@@ -81,7 +86,7 @@ export default function LinkPropertyForm({
             value={selectedCaseId}
             onChange={(e) => setSelectedCaseId(e.target.value)}
             disabled={isLoading}
-            className="w-full border-2 border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 disabled:opacity-50"
+            className={`w-full border-2 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 disabled:opacity-50 text-black ${fieldErrors.caseId ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
             required
           >
             <option value="">-- Select Case --</option>
@@ -91,6 +96,7 @@ export default function LinkPropertyForm({
               </option>
             ))}
           </select>
+          {fieldErrors.caseId && <p className="text-red-500 text-sm mt-1">{fieldErrors.caseId}</p>}
         </div>
 
         {error && (

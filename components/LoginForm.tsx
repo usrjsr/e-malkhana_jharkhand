@@ -10,12 +10,26 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setError("");
     setIsLoading(true);
+
+    const newFieldErrors: Record<string, string> = {};
+    if (!username.trim()) {
+      newFieldErrors.username = "Fill this field";
+    }
+    if (!password.trim()) {
+      newFieldErrors.password = "Fill this field";
+    }
+    setFieldErrors(newFieldErrors);
+    if (Object.keys(newFieldErrors).length > 0) {
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const result = await signIn("credentials", {
@@ -96,10 +110,11 @@ export default function LoginForm() {
                   placeholder="Enter your username"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full border-2 border-gray-300 rounded-lg pl-10 pr-3 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 text-gray-900 transition-all duration-200"
+                  className={`w-full border-2 rounded-lg pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 text-black transition-all duration-200 ${fieldErrors.username ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
                   required
                   disabled={isLoading}
                 />
+                {fieldErrors.username && <p className="text-red-500 text-sm mt-1">{fieldErrors.username}</p>}
               </div>
             </div>
 
@@ -132,10 +147,11 @@ export default function LoginForm() {
                   placeholder="Enter your password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full border-2 border-gray-300 rounded-lg pl-10 pr-3 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 text-gray-900 transition-all duration-200"
+                  className={`w-full border-2 rounded-lg pl-10 pr-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 text-black transition-all duration-200 ${fieldErrors.password ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
                   required
                   disabled={isLoading}
                 />
+                {fieldErrors.password && <p className="text-red-500 text-sm mt-1">{fieldErrors.password}</p>}
               </div>
             </div>
 
