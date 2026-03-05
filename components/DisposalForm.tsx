@@ -40,6 +40,7 @@ export default function DisposalForm({ redirectUrl, disposeAction }: DisposalFor
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   function handleChange(
     e: React.ChangeEvent<
@@ -82,6 +83,25 @@ export default function DisposalForm({ redirectUrl, disposeAction }: DisposalFor
     e.preventDefault();
     setError("");
     setLoading(true);
+
+    const newFieldErrors: Record<string, string> = {};
+    if (!form.disposalType.trim()) {
+      newFieldErrors.disposalType = "Fill this field";
+    }
+    if (!form.courtOrderReference.trim()) {
+      newFieldErrors.courtOrderReference = "Fill this field";
+    }
+    if (!form.disposalDate.trim()) {
+      newFieldErrors.disposalDate = "Fill this field";
+    }
+    if (!form.disposalAuthority.trim()) {
+      newFieldErrors.disposalAuthority = "Fill this field";
+    }
+    setFieldErrors(newFieldErrors);
+    if (Object.keys(newFieldErrors).length > 0) {
+      setLoading(false);
+      return;
+    }
 
     const d = new Date(form.disposalDate);
     if (isNaN(d.getTime())) {
@@ -147,7 +167,7 @@ export default function DisposalForm({ redirectUrl, disposeAction }: DisposalFor
               name="disposalType"
               value={form.disposalType}
               onChange={handleChange}
-              className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#dc3545] focus:ring-2 focus:ring-[#dc3545] focus:ring-opacity-20 transition-all duration-200"
+              className={`w-full border-2 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#dc3545] focus:ring-opacity-20 transition-all duration-200 text-black ${fieldErrors.disposalType ? 'border-red-500' : 'border-gray-300 focus:border-[#dc3545]'}`}
               required
               disabled={loading}
             >
@@ -157,6 +177,7 @@ export default function DisposalForm({ redirectUrl, disposeAction }: DisposalFor
               <option value="AUCTIONED">💰 Auctioned</option>
               <option value="COURT_CUSTODY">⚖️ Court Custody</option>
             </select>
+            {fieldErrors.disposalType && <p className="text-red-500 text-sm mt-1">{fieldErrors.disposalType}</p>}
             <p className="text-xs text-gray-500 mt-1">
               Choose the method of disposal as per court order
             </p>
@@ -176,10 +197,11 @@ export default function DisposalForm({ redirectUrl, disposeAction }: DisposalFor
               placeholder="e.g., Order No. 123/2025 dated 01-01-2025"
               value={form.courtOrderReference}
               onChange={handleChange}
-              className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#dc3545] focus:ring-2 focus:ring-[#dc3545] focus:ring-opacity-20 transition-all duration-200"
+              className={`w-full border-2 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#dc3545] focus:ring-opacity-20 transition-all duration-200 text-black ${fieldErrors.courtOrderReference ? 'border-red-500' : 'border-gray-300 focus:border-[#dc3545]'}`}
               required
               disabled={loading}
             />
+            {fieldErrors.courtOrderReference && <p className="text-red-500 text-sm mt-1">{fieldErrors.courtOrderReference}</p>}
             <p className="text-xs text-gray-500 mt-1">
               Enter the complete court order reference number
             </p>
@@ -199,10 +221,11 @@ export default function DisposalForm({ redirectUrl, disposeAction }: DisposalFor
               value={form.disposalDate}
               onChange={handleChange}
               max={new Date().toISOString().split("T")[0]}
-              className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#dc3545] focus:ring-2 focus:ring-[#dc3545] focus:ring-opacity-20 transition-all duration-200"
+              className={`w-full border-2 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#dc3545] focus:ring-opacity-20 transition-all duration-200 text-black ${fieldErrors.disposalDate ? 'border-red-500' : 'border-gray-300 focus:border-[#dc3545]'}`}
               required
               disabled={loading}
             />
+            {fieldErrors.disposalDate && <p className="text-red-500 text-sm mt-1">{fieldErrors.disposalDate}</p>}
             <p className="text-xs text-gray-500 mt-1">
               Date when the property was disposed
             </p>
@@ -222,10 +245,11 @@ export default function DisposalForm({ redirectUrl, disposeAction }: DisposalFor
               placeholder="e.g., District Court Judge, Magistrate Name"
               value={form.disposalAuthority}
               onChange={handleChange}
-              className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#dc3545] focus:ring-2 focus:ring-[#dc3545] focus:ring-opacity-20 transition-all duration-200"
+              className={`w-full border-2 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#dc3545] focus:ring-opacity-20 transition-all duration-200 text-black ${fieldErrors.disposalAuthority ? 'border-red-500' : 'border-gray-300 focus:border-[#dc3545]'}`}
               required
               disabled={loading}
             />
+            {fieldErrors.disposalAuthority && <p className="text-red-500 text-sm mt-1">{fieldErrors.disposalAuthority}</p>}
             <p className="text-xs text-gray-500 mt-1">
               Authority who authorized the disposal
             </p>
@@ -469,7 +493,7 @@ export default function DisposalForm({ redirectUrl, disposeAction }: DisposalFor
             value={form.remarks}
             onChange={handleChange}
             rows={4}
-            className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 resize-none transition-all duration-200"
+            className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 resize-none transition-all duration-200 text-black"
             disabled={loading}
           />
           <p className="text-xs text-gray-500 mt-1">
