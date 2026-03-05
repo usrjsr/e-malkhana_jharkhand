@@ -5,7 +5,7 @@ const propertySchema = new Schema(
     caseId: {
       type: Schema.Types.ObjectId,
       ref: "Case",
-      required: true,
+      required: false,
       index: true,
     },
 

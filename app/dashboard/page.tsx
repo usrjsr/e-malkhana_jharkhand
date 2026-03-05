@@ -25,7 +25,9 @@ export default async function DashboardPage() {
     const transferredProps = await Property.find({ currentOfficer: userId }).select("caseId").lean();
     const caseIdSet = new Set([
       ...ownedCases.map((c: any) => c._id.toString()),
-      ...transferredProps.map((p: any) => p.caseId.toString()),
+      ...transferredProps
+        .filter((p: any) => p.caseId !== null)
+        .map((p: any) => p.caseId.toString()),
     ]);
     caseFilter = { _id: { $in: Array.from(caseIdSet) } };
   }
@@ -41,6 +43,18 @@ export default async function DashboardPage() {
     status: "PENDING",
     createdAt: { $lt: threshold }
   });
+
+  // Count properties for the user
+  let propertyFilter: any = {};
+  if (userRole !== "ADMIN") {
+    propertyFilter.$or = [
+      { seizingOfficer: userId },
+      { currentOfficer: userId }
+    ];
+  }
+  
+  
+  const independentProperties = await Property.countDocuments({ ...propertyFilter, caseId: null });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
@@ -77,7 +91,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
           <div className="bg-white border-2 border-[#1e3a8a] p-6 rounded-xl shadow-lg">
             <p className="text-5xl font-bold text-[#1e3a8a] mb-2">{totalCases}</p>
             <p className="text-sm text-gray-500">Total Cases</p>
@@ -85,7 +99,7 @@ export default async function DashboardPage() {
 
           <div className="bg-white border-2 border-[#ffc107] p-6 rounded-xl shadow-lg">
             <p className="text-5xl font-bold text-[#ffc107] mb-2">{pendingCases}</p>
-            <p className="text-sm text-gray-500">Pending</p>
+            <p className="text-sm text-gray-500">Pending Cases</p>
           </div>
 
           <div className="bg-white border-2 border-[#28a745] p-6 rounded-xl shadow-lg">
@@ -94,11 +108,19 @@ export default async function DashboardPage() {
           </div>
 
           <Link
+            href="/properties"
+            className="bg-white border-2 border-[#17a2b8] p-6 rounded-xl shadow-lg hover:border-[#138496] transition"
+          >
+            <p className="text-5xl font-bold text-[#17a2b8] mb-2">{independentProperties}</p>
+            <p className="text-sm text-gray-500">Independent Properties (Click here)</p>
+          </Link>
+
+          <Link
             href="/alerts"
             className="bg-white border-2 border-[#dc3545] p-6 rounded-xl shadow-lg hover:border-[#c82333] transition"
           >
             <p className="text-5xl font-bold text-[#dc3545] mb-2">{alertCases}</p>
-            <p className="text-sm text-gray-500">Alerts</p>
+            <p className="text-sm text-gray-500">Alerts (Click here)</p>
           </Link>
         </div>
 

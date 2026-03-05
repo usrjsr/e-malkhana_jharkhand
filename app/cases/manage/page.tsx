@@ -29,7 +29,9 @@ export default async function ManageCasesPage() {
     const transferredProps = await Property.find({ currentOfficer: userId }).select("caseId").lean()
     const caseIdSet = new Set([
       ...ownedCases.map((c: any) => c._id.toString()),
-      ...transferredProps.map((p: any) => p.caseId.toString()),
+      ...transferredProps
+        .filter((p: any) => p.caseId !== null)
+        .map((p: any) => p.caseId.toString()),
     ])
     const caseIds = Array.from(caseIdSet)
     cases = await Case.find({ _id: { $in: caseIds } }).sort({ createdAt: -1 })
@@ -38,7 +40,7 @@ export default async function ManageCasesPage() {
 
   const caseData = cases.map((caseItem: any) => {
     const caseProperties = properties.filter(
-      (p: any) => p.caseId.toString() === caseItem._id.toString()
+      (p: any) => p.caseId && p.caseId.toString() === caseItem._id.toString()
     )
     return {
       ...caseItem.toObject(),

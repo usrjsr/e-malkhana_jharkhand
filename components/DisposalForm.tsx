@@ -4,11 +4,25 @@ import { useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { disposeProperty } from "@/app/cases/[caseId]/properties/[propertyId]/disposal/actions";
 
-export default function DisposalForm() {
+type DisposalFormProps = {
+  redirectUrl?: string;
+  disposeAction?: (formData: {
+    propertyId: string;
+    disposalType: string;
+    courtOrderReference: string;
+    disposalDate: string;
+    disposalAuthority: string;
+    remarks: string;
+    disposalPhoto: string;
+    courtOrderPhoto: string;
+  }) => Promise<{ success: boolean }>;
+};
+
+export default function DisposalForm({ redirectUrl, disposeAction }: DisposalFormProps) {
   const router = useRouter();
   const params = useParams();
 
-  const caseId = params.caseId as string;
+  const caseId = params.caseId as string | undefined;
   const propertyId = params.propertyId as string;
 
   const [form, setForm] = useState({
@@ -77,7 +91,8 @@ export default function DisposalForm() {
     }
 
     try {
-      await disposeProperty({
+      const actionFn = disposeAction || disposeProperty;
+      await actionFn({
         propertyId,
         disposalType: form.disposalType,
         courtOrderReference: form.courtOrderReference,
@@ -87,7 +102,10 @@ export default function DisposalForm() {
         disposalPhoto,
         courtOrderPhoto,
       });
-      router.replace(`/cases/${caseId}/properties/${propertyId}`);
+      const defaultRedirect = caseId
+        ? `/cases/${caseId}/properties/${propertyId}`
+        : `/properties/${propertyId}`;
+      router.replace(redirectUrl || defaultRedirect);
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "Failed to dispose property",

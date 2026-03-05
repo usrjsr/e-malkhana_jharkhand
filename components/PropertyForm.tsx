@@ -3,8 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createProperty } from "@/app/cases/[caseId]/properties/new/actions";
+import { createStandaloneProperty } from "@/app/properties/new/actions";
 
-export default function PropertyForm({ caseId }: { caseId: string }) {
+export default function PropertyForm({ caseId }: { caseId?: string }) {
   const router = useRouter();
 
   const [form, setForm] = useState({
@@ -104,7 +105,7 @@ export default function PropertyForm({ caseId }: { caseId: string }) {
     }
 
     try {
-      const result = await createProperty({
+      const propertyData = {
         caseId,
         category: form.category === "Other" ? form.customCategory : form.category,
         belongingTo: form.belongingTo,
@@ -114,9 +115,17 @@ export default function PropertyForm({ caseId }: { caseId: string }) {
         storageLocation: form.storageLocation,
         description: form.description,
         itemImages: imageUrls,
-      });
+      };
 
-      router.replace(`/cases/${caseId}/properties/${result.propertyId}`);
+      const result = caseId
+        ? await createProperty({ ...propertyData, caseId })
+        : await createStandaloneProperty(propertyData);
+
+      const redirectUrl = caseId
+        ? `/cases/${caseId}/properties/${result.propertyId}`
+        : `/properties/${result.propertyId}`;
+
+      router.replace(redirectUrl);
     } catch (err) {
       setError("Failed to add property. Please try again.");
       setIsLoading(false);

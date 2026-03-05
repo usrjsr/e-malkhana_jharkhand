@@ -34,7 +34,9 @@ export async function GET(req: NextRequest) {
     const transferredProps = await Property.find({ currentOfficer: userId }).select("caseId").lean()
     const caseIdSet = new Set([
       ...ownedCases.map((c: any) => c._id.toString()),
-      ...transferredProps.map((p: any) => p.caseId.toString()),
+      ...transferredProps
+        .filter((p: any) => p.caseId !== null)
+        .map((p: any) => p.caseId.toString()),
     ])
     allowedCaseIds = Array.from(caseIdSet)
   }

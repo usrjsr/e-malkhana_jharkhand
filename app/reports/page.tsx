@@ -21,7 +21,7 @@ export default async function ReportsPage() {
 
   const caseStats = cases.map((caseItem: any) => {
     const caseProperties = properties.filter(
-      (p: any) => p.caseId.toString() === caseItem._id.toString()
+      (p: any) => p.caseId && p.caseId.toString() === caseItem._id.toString()
     )
     return {
       ...caseItem.toObject(),

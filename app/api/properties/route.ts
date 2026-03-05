@@ -19,13 +19,9 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const caseId = searchParams.get("caseId")
 
-  if (!caseId) {
-    return NextResponse.json({ error: "caseId is required" }, { status: 400 })
-  }
-
   // Filter properties by user visibility for non-ADMIN users
   const isAdmin = session.user.role === "ADMIN"
-  const filter: any = { caseId }
+  const filter: any = caseId ? { caseId } : { caseId: null }
   if (!isAdmin) {
     filter.$or = [
       { seizingOfficer: session.user.id },
@@ -62,7 +58,6 @@ export async function POST(req: NextRequest) {
   } = body
 
   if (
-    !caseId ||
     !category ||
     !belongingTo ||
     !natureOfProperty ||
@@ -77,16 +72,19 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid data. At least one image is required." }, { status: 400 })
   }
 
-  const caseExists = await Case.findById(caseId)
-  if (!caseExists) {
-    return NextResponse.json({ error: "Case not found" }, { status: 404 })
+  // Only check if caseId exists if it's provided
+  if (caseId) {
+    const caseExists = await Case.findById(caseId)
+    if (!caseExists) {
+      return NextResponse.json({ error: "Case not found" }, { status: 404 })
+    }
   }
 
-  const qrData = `PROPERTY:${caseId}:${Date.now()}`
+  const qrData = `PROPERTY:${caseId || "STANDALONE"}:${Date.now()}`
   const qrCode = await QRCode.toDataURL(qrData)
 
   const property = await Property.create({
-    caseId,
+    caseId: caseId || null,
     category,
     belongingTo,
     natureOfProperty,

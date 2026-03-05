@@ -21,6 +21,11 @@ export default async function PropertyQRPage({ params }: Props) {
   }
 
   const caseId = property.caseId?.toString() || ""
+  
+  // Determine redirect URL based on whether property is linked to a case
+  const redirectUrl = caseId
+    ? `/cases/${caseId}/properties/${propertyId}`
+    : `/properties/${propertyId}`
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
@@ -65,8 +70,17 @@ export default async function PropertyQRPage({ params }: Props) {
               <div className="flex items-center text-sm text-gray-600">
                 <Link href="/dashboard" className="hover:text-[#1e3a8a] transition-colors">Dashboard</Link>
                 <span className="mx-2">/</span>
-                <Link href={`/cases/${caseId}`} className="hover:text-[#1e3a8a] transition-colors">Case Details</Link>
-                <span className="mx-2">/</span>
+                {caseId ? (
+                  <>
+                    <Link href={`/cases/${caseId}`} className="hover:text-[#1e3a8a] transition-colors">Case Details</Link>
+                    <span className="mx-2">/</span>
+                  </>
+                ) : (
+                  <>
+                    <Link href="/properties" className="hover:text-[#1e3a8a] transition-colors">Properties</Link>
+                    <span className="mx-2">/</span>
+                  </>
+                )}
                 <span className="text-[#1e3a8a] font-semibold">QR Code</span>
               </div>
             </div>
@@ -127,7 +141,7 @@ export default async function PropertyQRPage({ params }: Props) {
           <div className="flex gap-4">
             <QRPrintClient />
             <Link
-              href={`/cases/${caseId}/properties/${propertyId}`}
+              href={redirectUrl}
               className="bg-white border-2 border-[#1e3a8a] text-[#1e3a8a] px-6 py-2.5 rounded-lg font-semibold hover:bg-[#1e3a8a] hover:text-white transition-all duration-300 shadow-md hover:shadow-lg"
             >
               ← Back to Property
