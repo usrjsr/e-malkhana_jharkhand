@@ -95,7 +95,7 @@ export default function ManageCasesClient() {
               placeholder="e.g., 183/2021"
               value={crimeNumber}
               onChange={(e) => setCrimeNumber(e.target.value)}
-              className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a]"
+              className=" text-black w-full border-2  border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a]"
             />
           </div>
 
@@ -108,14 +108,14 @@ export default function ManageCasesClient() {
                 type="date"
                 value={seizureDateFrom}
                 onChange={(e) => setSeizureDateFrom(e.target.value)}
-                className="w-full border-2 border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:border-[#1e3a8a] text-sm"
+                className="w-full border-2 border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:border-[#1e3a8a] text-sm text-black"
                 placeholder="From"
               />
               <input
                 type="date"
                 value={seizureDateTo}
                 onChange={(e) => setSeizureDateTo(e.target.value)}
-                className="w-full border-2 border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:border-[#1e3a8a] text-sm"
+                className="w-full border-2 border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:border-[#1e3a8a] text-sm text-black"
                 placeholder="To"
               />
             </div>
@@ -130,7 +130,7 @@ export default function ManageCasesClient() {
               placeholder="e.g., Narsipatnam Town"
               value={policeStation}
               onChange={(e) => setPoliceStation(e.target.value)}
-              className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a]"
+              className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] text-black"
             />
           </div>
         </div>
@@ -146,7 +146,7 @@ export default function ManageCasesClient() {
               placeholder="e.g., Indian Penal Code"
               value={actAndLaw}
               onChange={(e) => setActAndLaw(e.target.value)}
-              className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a]"
+              className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] text-black"
             />
           </div>
 
@@ -159,7 +159,7 @@ export default function ManageCasesClient() {
               placeholder="e.g., 394, 326"
               value={section}
               onChange={(e) => setSection(e.target.value)}
-              className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a]"
+              className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] text-black"
             />
           </div>
 
@@ -170,7 +170,7 @@ export default function ManageCasesClient() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a]"
+              className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] text-black"
             >
               <option value="ALL">All Cases</option>
               <option value="PENDING">Pending</option>
@@ -191,7 +191,7 @@ export default function ManageCasesClient() {
             placeholder="Search by crime number, year, station, officer name, or ID"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a]"
+            className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] text-black"
           />
         </div>
 
