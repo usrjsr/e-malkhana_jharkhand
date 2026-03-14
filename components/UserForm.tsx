@@ -67,7 +67,7 @@ export default function UserForm() {
     }
 
     try {
-      await createUser({
+      const result = await createUser({
         fullName: form.fullName,
         email: form.email,
         username: form.username,
@@ -76,9 +76,14 @@ export default function UserForm() {
         officerId: form.officerId,
         policeStation: form.policeStation,
       });
+      if (!result.success) {
+        setError(result.error || "Failed to create user");
+        setIsLoading(false);
+        return;
+      }
       router.replace("/dashboard");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create user");
+      setError("An unexpected error occurred. Please try again.");
       setIsLoading(false);
     }
   }

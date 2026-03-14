@@ -5,8 +5,9 @@ import { User } from "@/models/User";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import bcrypt from "bcryptjs";
+import { asyncHandler } from "@/lib/async-handler";
 
-export async function createUser(formData: {
+export const createUser = asyncHandler(async (formData: {
   fullName: string;
   email: string;
   username: string;
@@ -14,7 +15,7 @@ export async function createUser(formData: {
   role: string;
   officerId: string;
   policeStation: string;
-}) {
+}) => {
   const session = await getServerSession(authOptions);
 
   if (!session) {
@@ -51,5 +52,5 @@ export async function createUser(formData: {
     status: "ACTIVE",
   });
 
-  return { success: true };
-}
+  return { created: true };
+});

@@ -121,13 +121,19 @@ export default function PropertyForm({ caseId }: { caseId?: string }) {
         ? await createProperty({ ...propertyData, caseId })
         : await createStandaloneProperty(propertyData);
 
+      if (!result.success) {
+        setError(result.error || "Failed to add property. Please try again.");
+        setIsLoading(false);
+        return;
+      }
+
       const redirectUrl = caseId
-        ? `/cases/${caseId}/properties/${result.propertyId}`
-        : `/properties/${result.propertyId}`;
+        ? `/cases/${caseId}/properties/${result.data!.propertyId}`
+        : `/properties/${result.data!.propertyId}`;
 
       router.replace(redirectUrl);
     } catch (err) {
-      setError("Failed to add property. Please try again.");
+      setError("An unexpected error occurred. Please try again.");
       setIsLoading(false);
     }
   }

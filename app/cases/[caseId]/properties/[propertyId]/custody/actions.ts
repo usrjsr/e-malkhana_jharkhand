@@ -6,8 +6,9 @@ import { Property } from "@/models/Property";
 import { User } from "@/models/User";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { asyncHandler } from "@/lib/async-handler";
 
-export async function addCustodyLog(formData: {
+export const addCustodyLog = asyncHandler(async (formData: {
   propertyId: string;
   fromOfficer: string;
   fromOfficerId: string;
@@ -19,7 +20,7 @@ export async function addCustodyLog(formData: {
   action: string;
   remarks: string;
   movementTimestamp: string;
-}) {
+}) => {
   const session = await getServerSession(authOptions);
   if (!session) {
     throw new Error("Unauthorized");
@@ -36,7 +37,6 @@ export async function addCustodyLog(formData: {
     throw new Error("Cannot add custody log to disposed property");
   }
 
-  // Validate fromOfficerId exists in DB
   const fromOfficerUser = await User.findOne({
     officerId: formData.fromOfficerId.toUpperCase(),
   });
@@ -46,7 +46,6 @@ export async function addCustodyLog(formData: {
     );
   }
 
-  // Validate toOfficerId if provided
   let toOfficerUser = null;
   if (formData.toOfficerId) {
     toOfficerUser = await User.findOne({
@@ -78,7 +77,6 @@ export async function addCustodyLog(formData: {
       : new Date(),
   });
 
-  // Update property status based on action
   if (formData.action === "MOVED") {
     property.status = "IN_TRANSIT";
   } else if (formData.action === "RECEIVED") {
@@ -86,7 +84,6 @@ export async function addCustodyLog(formData: {
   }
   property.lastMovementAt = new Date();
 
-  // Update currentOfficer when property is transferred
   if (
     toOfficerUser &&
     (formData.purpose === "TRANSFER" || formData.action === "RECEIVED")
@@ -96,5 +93,5 @@ export async function addCustodyLog(formData: {
 
   await property.save();
 
-  return { success: true };
-}
+  return { logged: true };
+});

@@ -5,8 +5,9 @@ import { Case } from "@/models/Case";
 import { User } from "@/models/User";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { asyncHandler } from "@/lib/async-handler";
 
-export async function createCase(formData: {
+export const createCase = asyncHandler(async (formData: {
   policeStation: string;
   stationAddress?: string;
   investigatingOfficerName: string;
@@ -17,14 +18,13 @@ export async function createCase(formData: {
   seizureDate: string;
   actAndLaw: string;
   section: string;
-}) {
+}) => {
   const session = await getServerSession(authOptions);
   if (!session) {
     throw new Error("Unauthorized");
   }
   await connectDB();
 
-  // Validate investigatingOfficerId exists in DB
   const officerExists = await User.findOne({
     officerId: formData.investigatingOfficerId.toUpperCase(),
   });
@@ -49,4 +49,4 @@ export async function createCase(formData: {
   });
 
   return { caseId: newCase._id.toString() };
-}
+});

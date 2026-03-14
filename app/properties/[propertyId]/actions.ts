@@ -5,11 +5,13 @@ import { Property } from "@/models/Property"
 import { Case } from "@/models/Case"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
+import { asyncHandler } from "@/lib/async-handler"
 
-export async function linkPropertyToCase(
-  propertyId: string,
-  caseId: string
-) {
+export const linkPropertyToCase = asyncHandler(async (params: {
+  propertyId: string;
+  caseId: string;
+}) => {
+  const { propertyId, caseId } = params;
   const session = await getServerSession(authOptions)
 
   if (!session) {
@@ -18,7 +20,6 @@ export async function linkPropertyToCase(
 
   await connectDB()
 
-  // Verify property exists and user has access
   const property = await Property.findById(propertyId)
   if (!property) {
     throw new Error("Property not found")
@@ -35,18 +36,13 @@ export async function linkPropertyToCase(
     throw new Error("Unauthorized")
   }
 
-  // Verify case exists
   const caseExists = await Case.findById(caseId)
   if (!caseExists) {
     throw new Error("Case not found")
   }
 
-  // Update property with case
   property.caseId = caseId
   await property.save()
 
-  return {
-    success: true,
-    message: "Property linked to case successfully",
-  }
-}
+  return { linked: true }
+});

@@ -38,17 +38,18 @@ export default function LinkPropertyForm({
     setIsLoading(true)
 
     try {
-      await linkPropertyToCase(propertyId, selectedCaseId)
+      const result = await linkPropertyToCase({ propertyId, caseId: selectedCaseId })
+      if (!result.success) {
+        setError(result.error || "Failed to link property to case")
+        setIsLoading(false)
+        return
+      }
       setSuccess("Property linked to case successfully!")
       setTimeout(() => {
         router.refresh()
       }, 1500)
     } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Failed to link property to case"
-      )
+      setError("An unexpected error occurred. Please try again.")
     } finally {
       setIsLoading(false)
     }

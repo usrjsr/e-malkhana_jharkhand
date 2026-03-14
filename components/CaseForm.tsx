@@ -70,9 +70,14 @@ export default function CaseForm() {
 
     try {
       const result = await createCase(form);
-      router.replace(`/cases/${result.caseId}`);
+      if (!result.success) {
+        setError(result.error || "Failed to create case");
+        setIsLoading(false);
+        return;
+      }
+      router.replace(`/cases/${result.data!.caseId}`);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create case");
+      setError("An unexpected error occurred. Please try again.");
       setIsLoading(false);
     }
   }

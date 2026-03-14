@@ -112,7 +112,7 @@ export default function DisposalForm({ redirectUrl, disposeAction }: DisposalFor
 
     try {
       const actionFn = disposeAction || disposeProperty;
-      await actionFn({
+      const result = await actionFn({
         propertyId,
         disposalType: form.disposalType,
         courtOrderReference: form.courtOrderReference,
@@ -122,14 +122,17 @@ export default function DisposalForm({ redirectUrl, disposeAction }: DisposalFor
         disposalPhoto,
         courtOrderPhoto,
       });
+      if ('success' in result && !result.success) {
+        setError((result as any).error || "Failed to dispose property");
+        setLoading(false);
+        return;
+      }
       const defaultRedirect = caseId
         ? `/cases/${caseId}/properties/${propertyId}`
         : `/properties/${propertyId}`;
       router.replace(redirectUrl || defaultRedirect);
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to dispose property",
-      );
+      setError("An unexpected error occurred. Please try again.");
       setLoading(false);
     }
   }

@@ -5,8 +5,9 @@ import { Property } from "@/models/Property";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import QRCode from "qrcode";
+import { asyncHandler } from "@/lib/async-handler";
 
-export async function createStandaloneProperty(data: {
+export const createStandaloneProperty = asyncHandler(async (data: {
   caseId?: string;
   category: string;
   belongingTo: string;
@@ -16,7 +17,7 @@ export async function createStandaloneProperty(data: {
   storageLocation: string;
   description: string;
   itemImages: string[];
-}) {
+}) => {
   const session = await getServerSession(authOptions);
   if (!session) {
     throw new Error("Unauthorized");
@@ -43,7 +44,5 @@ export async function createStandaloneProperty(data: {
   property.qrCode = qrCode;
   await property.save();
 
-  return {
-    propertyId: property._id.toString(),
-  };
-}
+  return { propertyId: property._id.toString() };
+});

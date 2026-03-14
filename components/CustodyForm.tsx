@@ -72,7 +72,7 @@ export default function CustodyForm({
     }
 
     try {
-      await addCustodyLog({
+      const result = await addCustodyLog({
         propertyId,
         fromOfficer: form.fromOfficer,
         fromOfficerId: form.fromOfficerId,
@@ -85,6 +85,12 @@ export default function CustodyForm({
         remarks: form.remarks,
         movementTimestamp: form.movementTimestamp,
       });
+
+      if (!result.success) {
+        setError(result.error || "Failed to add custody entry");
+        setLoading(false);
+        return;
+      }
 
       setForm({
         fromOfficer: "",
@@ -102,9 +108,7 @@ export default function CustodyForm({
       setLoading(false);
       onSuccess();
     } catch (err) {
-      setError(
-        err instanceof Error ? err.message : "Failed to add custody entry",
-      );
+      setError("An unexpected error occurred. Please try again.");
       setLoading(false);
     }
   }
@@ -236,56 +240,56 @@ export default function CustodyForm({
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div>
-        <label
-          htmlFor="purpose"
-          className="block text-sm font-semibold text-gray-700 mb-2"
-        >
-          Purpose *
-        </label>
-        <select
-          id="purpose"
-          name="purpose"
-          value={form.purpose}
-          onChange={handleChange}
-          className={`w-full border-2 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black ${fieldErrors.purpose ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
-          required
-          disabled={loading}
-        >
-          <option value="STORAGE">Storage</option>
-          <option value="COURT">Court Presentation</option>
-          <option value="FSL">FSL Analysis</option>
-          <option value="ANALYSIS">Analysis/Examination</option>
-          <option value="TRANSFER">Transfer</option>
-          <option value="DISPOSAL">Disposal</option>
-          <option value="RELEASE">Release</option>
-        </select>
-        {fieldErrors.purpose && <p className="text-red-500 text-sm mt-1">{fieldErrors.purpose}</p>}
-      </div>
+        <div>
+          <label
+            htmlFor="purpose"
+            className="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            Purpose *
+          </label>
+          <select
+            id="purpose"
+            name="purpose"
+            value={form.purpose}
+            onChange={handleChange}
+            className={`w-full border-2 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black ${fieldErrors.purpose ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
+            required
+            disabled={loading}
+          >
+            <option value="STORAGE">Storage</option>
+            <option value="COURT">Court Presentation</option>
+            <option value="FSL">FSL Analysis</option>
+            <option value="ANALYSIS">Analysis/Examination</option>
+            <option value="TRANSFER">Transfer</option>
+            <option value="DISPOSAL">Disposal</option>
+            <option value="RELEASE">Release</option>
+          </select>
+          {fieldErrors.purpose && <p className="text-red-500 text-sm mt-1">{fieldErrors.purpose}</p>}
+        </div>
 
-      <div>
-        <label
-          htmlFor="action"
-          className="block text-sm font-semibold text-gray-700 mb-2"
-        >
-          Action *
-        </label>
-        <select
-          id="action"
-          name="action"
-          value={form.action}
-          onChange={handleChange}
-          className={`w-full border-2 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black ${fieldErrors.action ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
-          required
-          disabled={loading}
-        >
-          <option value="MOVED">Moved</option>
-          <option value="RECEIVED">Received</option>
-          <option value="DISPOSED">Disposed</option>
-          <option value="RELEASED">Released</option>
-        </select>
-        {fieldErrors.action && <p className="text-red-500 text-sm mt-1">{fieldErrors.action}</p>}
-      </div>
+        <div>
+          <label
+            htmlFor="action"
+            className="block text-sm font-semibold text-gray-700 mb-2"
+          >
+            Action *
+          </label>
+          <select
+            id="action"
+            name="action"
+            value={form.action}
+            onChange={handleChange}
+            className={`w-full border-2 rounded-lg px-4 py-2.5 focus:outline-none focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black ${fieldErrors.action ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
+            required
+            disabled={loading}
+          >
+            <option value="MOVED">Moved</option>
+            <option value="RECEIVED">Received</option>
+            <option value="DISPOSED">Disposed</option>
+            <option value="RELEASED">Released</option>
+          </select>
+          {fieldErrors.action && <p className="text-red-500 text-sm mt-1">{fieldErrors.action}</p>}
+        </div>
       </div>
 
       <div>

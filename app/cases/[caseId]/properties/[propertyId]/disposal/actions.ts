@@ -6,8 +6,9 @@ import { Disposal } from "@/models/Disposal";
 import { Case } from "@/models/Case";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { asyncHandler } from "@/lib/async-handler";
 
-export async function disposeProperty(formData: {
+export const disposeProperty = asyncHandler(async (formData: {
   propertyId: string;
   disposalType: string;
   courtOrderReference: string;
@@ -16,7 +17,7 @@ export async function disposeProperty(formData: {
   remarks: string;
   disposalPhoto: string;
   courtOrderPhoto: string;
-}) {
+}) => {
   const session = await getServerSession(authOptions);
   if (!session) {
     throw new Error("Unauthorized");
@@ -48,7 +49,6 @@ export async function disposeProperty(formData: {
   property.status = "DISPOSED";
   await property.save();
 
-  // Auto-dispose case if all properties are disposed
   const remaining = await Property.countDocuments({
     caseId: property.caseId,
     status: { $ne: "DISPOSED" },
@@ -57,5 +57,5 @@ export async function disposeProperty(formData: {
     await Case.findByIdAndUpdate(property.caseId, { status: "DISPOSED" });
   }
 
-  return { success: true };
-}
+  return { disposed: true };
+});
