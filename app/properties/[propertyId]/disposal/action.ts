@@ -22,9 +22,7 @@ export const disposeIndependentProperty = asyncHandler(async (formData: {
         throw new Error("Unauthorized");
     }
 
-    if ((session.user as any).role !== "ADMIN") {
-        throw new Error("Only admins can dispose properties");
-    }
+    
 
     await connectDB();
 

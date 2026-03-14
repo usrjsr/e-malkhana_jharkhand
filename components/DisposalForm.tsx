@@ -175,10 +175,10 @@ export default function DisposalForm({ redirectUrl, disposeAction }: DisposalFor
               disabled={loading}
             >
               <option value="">Select Disposal Type</option>
-              <option value="RETURNED">✓ Returned to Owner</option>
-              <option value="DESTROYED">🔥 Destroyed</option>
-              <option value="AUCTIONED">💰 Auctioned</option>
-              <option value="COURT_CUSTODY">⚖️ Court Custody</option>
+              <option value="RETURNED">Returned to Owner</option>
+              <option value="DESTROYED">Destroyed</option>
+              <option value="AUCTIONED">Auctioned</option>
+              <option value="COURT_CUSTODY">Court Custody</option>
             </select>
             {fieldErrors.disposalType && <p className="text-red-500 text-sm mt-1">{fieldErrors.disposalType}</p>}
             <p className="text-xs text-gray-500 mt-1">
