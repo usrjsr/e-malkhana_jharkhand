@@ -6,8 +6,9 @@ import { Property } from "@/models/Property";
 import { User } from "@/models/User";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { asyncHandler } from "@/lib/async-handler";
 
-export async function addCustodyLog(formData: {
+export const addCustodyLog = asyncHandler(async (formData: {
     propertyId: string;
     fromOfficer: string;
     fromOfficerId: string;
@@ -19,7 +20,7 @@ export async function addCustodyLog(formData: {
     action: string;
     remarks: string;
     movementTimestamp: string;
-}) {
+}) => {
     const session = await getServerSession(authOptions);
     if (!session) {
         throw new Error("Unauthorized");
@@ -97,4 +98,4 @@ export async function addCustodyLog(formData: {
     await property.save();
 
     return { success: true };
-}
+});

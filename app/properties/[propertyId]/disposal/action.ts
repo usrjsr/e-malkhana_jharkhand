@@ -5,8 +5,9 @@ import { Property } from "@/models/Property";
 import { Disposal } from "@/models/Disposal";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { asyncHandler } from "@/lib/async-handler";
 
-export async function disposeIndependentProperty(formData: {
+export const disposeIndependentProperty = asyncHandler(async (formData: {
     propertyId: string;
     disposalType: string;
     courtOrderReference: string;
@@ -15,12 +16,15 @@ export async function disposeIndependentProperty(formData: {
     remarks: string;
     disposalPhoto: string;
     courtOrderPhoto: string;
-}) {
+}) => {
     const session = await getServerSession(authOptions);
     if (!session) {
         throw new Error("Unauthorized");
     }
 
+    if ((session.user as any).role !== "ADMIN") {
+        throw new Error("Only admins can dispose properties");
+    }
 
     await connectDB();
 
@@ -45,4 +49,4 @@ export async function disposeIndependentProperty(formData: {
     await property.save();
 
     return { success: true };
-}
+});
