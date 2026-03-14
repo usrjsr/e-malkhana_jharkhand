@@ -304,7 +304,7 @@ export default async function PropertyDetailsPage({
                 </div>
               </Link>
 
-              {userRole === "ADMIN" && property.status !== "DISPOSED" && (
+              {property.status !== "DISPOSED" && (
                 <Link
                   href={`/properties/${property._id}/disposal`}
                   className="bg-white border-2 border-[#dc3545] p-6 rounded-lg hover:bg-[#fff5f5] transition-colors group shadow-lg"

@@ -123,10 +123,6 @@ export default function DisposalPage() {
                                         and audited.
                                     </span>
                                 </li>
-                                <li className="flex items-start gap-2">
-                                    <span className="font-bold">•</span>
-                                    <span>Admin privileges are required for this action.</span>
-                                </li>
                             </ul>
                         </div>
                     </div>

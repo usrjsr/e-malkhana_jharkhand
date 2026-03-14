@@ -206,7 +206,7 @@ export default async function PropertyDetailPage({ params }: Props) {
             </div>
           </Link>
 
-          {(session.user as any)?.role === "ADMIN" && property.status !== "DISPOSED" && (
+          { property.status !== "DISPOSED" && (
             <Link
               href={`/cases/${caseId}/properties/${propertyId}/disposal`}
               className="bg-white border-2 border-[#dc3545] p-6 hover:bg-[#fff5f5] transition-colors group"

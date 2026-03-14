@@ -21,9 +21,6 @@ export async function disposeIndependentProperty(formData: {
         throw new Error("Unauthorized");
     }
 
-    if ((session.user as any).role !== "ADMIN") {
-        throw new Error("Only admins can dispose properties");
-    }
 
     await connectDB();
 
