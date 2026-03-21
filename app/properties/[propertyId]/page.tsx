@@ -213,6 +213,25 @@ export default async function PropertyDetailsPage({
 
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Property Type
+                  </label>
+                  <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
+                    property.propertyType === "CASE_RELATED"
+                      ? "bg-blue-100 text-blue-700"
+                      : property.propertyType === "KURKI"
+                        ? "bg-orange-100 text-orange-700"
+                        : "bg-purple-100 text-purple-700"
+                  }`}>
+                    {property.propertyType === "CASE_RELATED"
+                      ? "Case Related"
+                      : property.propertyType === "KURKI"
+                        ? "Kurki"
+                        : "Unclaimed"}
+                  </span>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
                     Category
                   </label>
                   <p className="text-gray-700">{property.category}</p>
@@ -235,6 +254,45 @@ export default async function PropertyDetailsPage({
                       : property.belongingTo === "COMPLAINANT"
                         ? "Complainant"
                         : "Unknown"}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    GD Number
+                  </label>
+                  <p className="text-gray-700">
+                    {property.gdNumber || "N/A"}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    GD Date
+                  </label>
+                  <p className="text-gray-700">
+                    {property.gdDate
+                      ? new Date(property.gdDate).toLocaleDateString("en-IN", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })
+                      : "N/A"}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-gray-700 mb-1">
+                    Date of Seizure
+                  </label>
+                  <p className="text-gray-700">
+                    {property.seizureDate
+                      ? new Date(property.seizureDate).toLocaleDateString("en-IN", {
+                          year: "numeric",
+                          month: "long",
+                          day: "numeric",
+                        })
+                      : "N/A"}
                   </p>
                 </div>
 

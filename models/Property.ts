@@ -15,6 +15,29 @@ const propertySchema = new Schema(
       index: true,
     },
 
+    propertyType: {
+      type: String,
+      required: true,
+      enum: ["CASE_RELATED", "KURKI", "UNCLAIMED"],
+      uppercase: true,
+    },
+
+    gdNumber: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+
+    gdDate: {
+      type: Date,
+      default: null,
+    },
+
+    seizureDate: {
+      type: Date,
+      required: true,
+    },
+
     category: {
       type: String,
       required: true,

@@ -9,9 +9,13 @@ import { asyncHandler } from "@/lib/async-handler";
 
 export const createStandaloneProperty = asyncHandler(async (data: {
   caseId?: string;
+  propertyType: string;
   category: string;
   belongingTo: string;
   natureOfProperty: string;
+  gdNumber: string;
+  gdDate: string;
+  seizureDate: string;
   quantity: string;
   units: string;
   storageLocation: string;
@@ -27,9 +31,13 @@ export const createStandaloneProperty = asyncHandler(async (data: {
 
   const property = await Property.create({
     caseId: data.caseId || null,
+    propertyType: data.propertyType,
     category: data.category,
     belongingTo: data.belongingTo,
     natureOfProperty: data.natureOfProperty,
+    gdNumber: data.gdNumber || null,
+    gdDate: data.gdDate ? new Date(data.gdDate) : null,
+    seizureDate: new Date(data.seizureDate),
     quantity: Number(data.quantity),
     units: data.units,
     storageLocation: data.storageLocation,

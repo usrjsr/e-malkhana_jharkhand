@@ -9,15 +9,21 @@ export default function PropertyForm({ caseId }: { caseId?: string }) {
   const router = useRouter();
 
   const [form, setForm] = useState({
+    propertyType: "",
     category: "",
     customCategory: "",
     belongingTo: "UNKNOWN",
     natureOfProperty: "",
+    gdNumber: "",
+    gdDate: "",
+    seizureDate: "",
     quantity: "",
     units: "",
     storageLocation: "",
     description: "",
   });
+
+  const isGdDisabled = form.propertyType === "CASE_RELATED" || form.propertyType === "KURKI";
 
   const PROPERTY_CATEGORIES = [
     "Electronics",
@@ -34,6 +40,8 @@ export default function PropertyForm({ caseId }: { caseId?: string }) {
     "Digital Evidence",
     "Biological Evidence",
     "Tools/Instruments",
+    "Alcohol",
+    "Chemical",
     "Other",
   ];
 
@@ -47,7 +55,12 @@ export default function PropertyForm({ caseId }: { caseId?: string }) {
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
     >,
   ) {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    if (name === "propertyType" && (value === "CASE_RELATED" || value === "KURKI")) {
+      setForm({ ...form, [name]: value, gdNumber: "", gdDate: "" });
+    } else {
+      setForm({ ...form, [name]: value });
+    }
   }
 
   async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
@@ -107,9 +120,13 @@ export default function PropertyForm({ caseId }: { caseId?: string }) {
     try {
       const propertyData = {
         caseId,
+        propertyType: form.propertyType,
         category: form.category === "Other" ? form.customCategory : form.category,
         belongingTo: form.belongingTo,
         natureOfProperty: form.natureOfProperty,
+        gdNumber: isGdDisabled ? "" : form.gdNumber,
+        gdDate: isGdDisabled ? "" : form.gdDate,
+        seizureDate: form.seizureDate,
         quantity: form.quantity,
         units: form.units,
         storageLocation: form.storageLocation,
@@ -281,7 +298,7 @@ export default function PropertyForm({ caseId }: { caseId?: string }) {
             </div>
           </div>
 
-          {/* Classification Section */}
+          {/* Property Type Section */}
           <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-[#1e3a8a] p-5 rounded-r-lg shadow-sm">
             <h4 className="font-bold text-[#1e3a8a] mb-4 text-lg flex items-center gap-2">
               <svg
@@ -297,10 +314,33 @@ export default function PropertyForm({ caseId }: { caseId?: string }) {
                   d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
                 />
               </svg>
-              Property Classification
+              Property Type & Classification
             </h4>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label
+                  htmlFor="propertyType"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
+                  Property Type *
+                </label>
+                <select
+                  id="propertyType"
+                  name="propertyType"
+                  value={form.propertyType}
+                  onChange={handleChange}
+                  className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black"
+                  required
+                  disabled={isLoading}
+                >
+                  <option value="">-- Select Property Type --</option>
+                  <option value="CASE_RELATED">Case Related</option>
+                  <option value="KURKI">Kurki</option>
+                  <option value="UNCLAIMED">Unclaimed</option>
+                </select>
+              </div>
+
               <div>
                 <label
                   htmlFor="category"
@@ -313,7 +353,7 @@ export default function PropertyForm({ caseId }: { caseId?: string }) {
                   name="category"
                   value={form.category}
                   onChange={handleChange}
-                  className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+                  className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black"
                   required
                   disabled={isLoading}
                 >
@@ -339,7 +379,7 @@ export default function PropertyForm({ caseId }: { caseId?: string }) {
                     placeholder="Enter custom category"
                     value={form.customCategory}
                     onChange={handleChange}
-                    className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+                    className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black"
                     required
                     disabled={isLoading}
                   />
@@ -358,7 +398,7 @@ export default function PropertyForm({ caseId }: { caseId?: string }) {
                   name="belongingTo"
                   value={form.belongingTo}
                   onChange={handleChange}
-                  className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+                  className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black"
                   disabled={isLoading}
                 >
                   <option value="ACCUSED">Accused</option>
@@ -381,7 +421,95 @@ export default function PropertyForm({ caseId }: { caseId?: string }) {
                   placeholder="e.g., Mobile Phone, Gold Chain, Motorcycle"
                   value={form.natureOfProperty}
                   onChange={handleChange}
-                  className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+                  className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black"
+                  required
+                  disabled={isLoading}
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* GD & Seizure Details Section */}
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-[#1e3a8a] p-5 rounded-r-lg shadow-sm">
+            <h4 className="font-bold text-[#1e3a8a] mb-4 text-lg flex items-center gap-2">
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                />
+              </svg>
+              GD & Seizure Details
+            </h4>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label
+                  htmlFor="gdNumber"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
+                  GD Number {!isGdDisabled && "*"}
+                </label>
+                <input
+                  id="gdNumber"
+                  name="gdNumber"
+                  type="text"
+                  placeholder={isGdDisabled ? "N/A" : "Enter GD number"}
+                  value={isGdDisabled ? "" : form.gdNumber}
+                  onChange={handleChange}
+                  className={`w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black ${isGdDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                  required={!isGdDisabled}
+                  disabled={isLoading || isGdDisabled}
+                />
+                {isGdDisabled && (
+                  <p className="text-xs text-gray-500 mt-1">Not applicable for {form.propertyType === "CASE_RELATED" ? "Case Related" : "Kurki"} properties</p>
+                )}
+              </div>
+
+              <div>
+                <label
+                  htmlFor="gdDate"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
+                  GD Date {!isGdDisabled && "*"}
+                </label>
+                <input
+                  id="gdDate"
+                  name="gdDate"
+                  type="date"
+                  value={isGdDisabled ? "" : form.gdDate}
+                  onChange={handleChange}
+                  max={new Date().toISOString().split("T")[0]}
+                  className={`w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black ${isGdDisabled ? 'bg-gray-100 cursor-not-allowed' : ''}`}
+                  required={!isGdDisabled}
+                  disabled={isLoading || isGdDisabled}
+                />
+                {isGdDisabled && (
+                  <p className="text-xs text-gray-500 mt-1">Not applicable for {form.propertyType === "CASE_RELATED" ? "Case Related" : "Kurki"} properties</p>
+                )}
+              </div>
+
+              <div>
+                <label
+                  htmlFor="seizureDate"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
+                  Date of Seizure *
+                </label>
+                <input
+                  id="seizureDate"
+                  name="seizureDate"
+                  type="date"
+                  value={form.seizureDate}
+                  onChange={handleChange}
+                  max={new Date().toISOString().split("T")[0]}
+                  className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black"
                   required
                   disabled={isLoading}
                 />
@@ -423,7 +551,7 @@ export default function PropertyForm({ caseId }: { caseId?: string }) {
                   placeholder="Enter quantity"
                   value={form.quantity}
                   onChange={handleChange}
-                  className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+                  className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black"
                   required
                   disabled={isLoading}
                 />
@@ -443,7 +571,7 @@ export default function PropertyForm({ caseId }: { caseId?: string }) {
                   placeholder="e.g., pieces, grams, liters"
                   value={form.units}
                   onChange={handleChange}
-                  className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+                  className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black"
                   disabled={isLoading}
                 />
               </div>
@@ -462,7 +590,7 @@ export default function PropertyForm({ caseId }: { caseId?: string }) {
                   placeholder="e.g., Rack A-12, Room 3, Locker 45"
                   value={form.storageLocation}
                   onChange={handleChange}
-                  className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200"
+                  className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 transition-all duration-200 text-black"
                   required
                   disabled={isLoading}
                 />
@@ -503,7 +631,7 @@ export default function PropertyForm({ caseId }: { caseId?: string }) {
                 value={form.description}
                 onChange={handleChange}
                 rows={4}
-                className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 resize-none transition-all duration-200"
+                className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] focus:ring-2 focus:ring-[#1e3a8a] focus:ring-opacity-20 resize-none transition-all duration-200 text-black"
                 required
                 disabled={isLoading}
               />
