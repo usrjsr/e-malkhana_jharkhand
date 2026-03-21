@@ -15,7 +15,7 @@ export const disposeIndependentProperty = asyncHandler(async (formData: {
     disposalAuthority: string;
     remarks: string;
     disposalPhoto: string;
-    courtOrderPhoto: string;
+    courtOrderPdf: string;
 }) => {
     const session = await getServerSession(authOptions);
     if (!session) {
@@ -39,7 +39,7 @@ export const disposeIndependentProperty = asyncHandler(async (formData: {
         disposalAuthority: formData.disposalAuthority,
         remarks: formData.remarks,
         disposalPhoto: formData.disposalPhoto || undefined,
-        courtOrderPhoto: formData.courtOrderPhoto || undefined,
+        courtOrderPdf: formData.courtOrderPdf || undefined,
         handledBy: (session.user as any).id,
     });
 

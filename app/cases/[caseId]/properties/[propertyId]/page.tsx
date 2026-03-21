@@ -278,8 +278,8 @@ export default async function PropertyDetailPage({ params }: Props) {
                     </div>
                   )}
 
-                  {/* Disposal Photos */}
-                  {((disposal as any).disposalPhoto || (disposal as any).courtOrderPhoto) && (
+                  {/* Disposal Photos & Documents */}
+                  {((disposal as any).disposalPhoto || (disposal as any).courtOrderPdf) && (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                       {(disposal as any).disposalPhoto && (
                         <div className="bg-[#f8f9fa] border-2 border-gray-200 rounded-lg overflow-hidden">
@@ -297,18 +297,22 @@ export default async function PropertyDetailPage({ params }: Props) {
                           </div>
                         </div>
                       )}
-                      {(disposal as any).courtOrderPhoto && (
+                      {(disposal as any).courtOrderPdf && (
                         <div className="bg-[#f8f9fa] border-2 border-gray-200 rounded-lg overflow-hidden">
                           <div className="bg-[#1e3a8a] text-white px-4 py-2">
-                            <p className="text-sm font-bold">Court Order Photo</p>
+                            <p className="text-sm font-bold">Court Order (PDF)</p>
                           </div>
-                          <div className="p-3">
-                            <a href={(disposal as any).courtOrderPhoto} target="_blank" rel="noopener noreferrer">
-                              <img
-                                src={(disposal as any).courtOrderPhoto}
-                                alt="Court order reference"
-                                className="w-full object-cover max-h-64 border border-gray-300 rounded hover:opacity-90 transition-opacity cursor-pointer"
-                              />
+                          <div className="p-3 flex flex-col items-center justify-center py-6">
+                            <svg className="w-12 h-12 text-[#dc3545] mb-2" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
+                            </svg>
+                            <a
+                              href={(disposal as any).courtOrderPdf}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="bg-[#1e3a8a] text-white px-4 py-2 rounded font-semibold hover:bg-[#1e40af] transition-colors text-sm"
+                            >
+                              View Court Order PDF ↗
                             </a>
                           </div>
                         </div>

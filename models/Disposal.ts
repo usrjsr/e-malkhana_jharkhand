@@ -42,7 +42,7 @@ const disposalSchema = new Schema(
       trim: true,
     },
 
-    courtOrderPhoto: {
+    courtOrderPdf: {
       type: String,
       trim: true,
     },

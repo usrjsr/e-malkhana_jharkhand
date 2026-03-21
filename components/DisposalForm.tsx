@@ -14,7 +14,7 @@ type DisposalFormProps = {
     disposalAuthority: string;
     remarks: string;
     disposalPhoto: string;
-    courtOrderPhoto: string;
+    courtOrderPdf: string;
   }) => Promise<{ success: boolean }>;
 };
 
@@ -34,9 +34,9 @@ export default function DisposalForm({ redirectUrl, disposeAction }: DisposalFor
   });
 
   const [disposalPhoto, setDisposalPhoto] = useState("");
-  const [courtOrderPhoto, setCourtOrderPhoto] = useState("");
+  const [courtOrderPdf, setCourtOrderPdf] = useState("");
   const [uploadingDisposalPhoto, setUploadingDisposalPhoto] = useState(false);
-  const [uploadingCourtOrderPhoto, setUploadingCourtOrderPhoto] = useState(false);
+  const [uploadingCourtOrderPdf, setUploadingCourtOrderPdf] = useState(false);
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -72,7 +72,7 @@ export default function DisposalForm({ redirectUrl, disposeAction }: DisposalFor
       setUrl(data.url);
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "Image upload failed. Please try again.",
+        err instanceof Error ? err.message : "File upload failed. Please try again.",
       );
     } finally {
       setUploading(false);
@@ -120,7 +120,7 @@ export default function DisposalForm({ redirectUrl, disposeAction }: DisposalFor
         disposalAuthority: form.disposalAuthority,
         remarks: form.remarks,
         disposalPhoto,
-        courtOrderPhoto,
+        courtOrderPdf,
       });
       if ('success' in result && !result.success) {
         setError((result as any).error || "Failed to dispose property");
@@ -371,18 +371,19 @@ export default function DisposalForm({ redirectUrl, disposeAction }: DisposalFor
             </p>
           </div>
 
-          {/* Court Order Reference Photo */}
+          {/* Court Order Reference PDF */}
           <div>
             <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Court Order Reference Photo
+              Court Order Reference (PDF)
             </label>
-            {courtOrderPhoto ? (
+            {courtOrderPdf ? (
               <div className="flex items-start gap-4">
-                <img
-                  src={courtOrderPhoto}
-                  alt="Court order reference"
-                  className="w-40 h-40 object-cover border-2 border-gray-300 rounded-lg shadow-md"
-                />
+                <div className="w-40 h-40 border-2 border-gray-300 rounded-lg shadow-md bg-gray-50 flex flex-col items-center justify-center">
+                  <svg className="w-12 h-12 text-[#dc3545]" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4z" clipRule="evenodd" />
+                  </svg>
+                  <span className="text-xs font-bold text-[#dc3545] mt-1">PDF</span>
+                </div>
                 <div className="flex-1">
                   <div className="bg-[#d4edda] border-l-4 border-[#28a745] p-3 rounded-r-lg shadow-sm">
                     <div className="flex items-center">
@@ -398,22 +399,30 @@ export default function DisposalForm({ redirectUrl, disposeAction }: DisposalFor
                         />
                       </svg>
                       <p className="text-sm text-[#155724] font-bold">
-                        Court order photo uploaded!
+                        Court order PDF uploaded!
                       </p>
                     </div>
                   </div>
+                  <a
+                    href={courtOrderPdf}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-block text-sm text-[#1e3a8a] hover:text-[#1e40af] font-semibold transition-colors underline"
+                  >
+                    View PDF ↗
+                  </a>
                   <button
                     type="button"
-                    onClick={() => setCourtOrderPhoto("")}
-                    className="mt-2 text-sm text-[#dc3545] hover:text-[#c82333] font-semibold transition-colors"
+                    onClick={() => setCourtOrderPdf("")}
+                    className="mt-2 ml-4 text-sm text-[#dc3545] hover:text-[#c82333] font-semibold transition-colors"
                   >
-                    ✕ Remove and upload different photo
+                    ✕ Remove and upload different PDF
                   </button>
                 </div>
               </div>
             ) : (
               <div className="border-2 border-dashed border-gray-300 p-6 text-center bg-white rounded-lg hover:border-[#28a745] transition-colors">
-                {uploadingCourtOrderPhoto ? (
+                {uploadingCourtOrderPdf ? (
                   <div className="flex items-center justify-center gap-2">
                     <svg
                       className="animate-spin h-6 w-6 text-[#28a745]"
@@ -441,14 +450,14 @@ export default function DisposalForm({ redirectUrl, disposeAction }: DisposalFor
                         d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                       />
                     </svg>
-                    <p className="text-gray-600 font-semibold mb-1">Upload court order photo</p>
-                    <p className="text-xs text-gray-400 mb-3">Photo/scan of the court order document</p>
+                    <p className="text-gray-600 font-semibold mb-1">Upload court order PDF</p>
+                    <p className="text-xs text-gray-400 mb-3">PDF of the court order document</p>
                     <input
                       type="file"
-                      accept="image/jpeg,image/png,image/webp"
+                      accept="application/pdf"
                       onChange={(e) => {
                         const file = e.target.files?.[0];
-                        if (file) handlePhotoUpload(file, setCourtOrderPhoto, setUploadingCourtOrderPhoto);
+                        if (file) handlePhotoUpload(file, setCourtOrderPdf, setUploadingCourtOrderPdf);
                       }}
                       className="text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-[#28a745] file:text-white hover:file:bg-[#218838] file:cursor-pointer"
                       disabled={loading}
@@ -458,7 +467,7 @@ export default function DisposalForm({ redirectUrl, disposeAction }: DisposalFor
               </div>
             )}
             <p className="text-xs text-gray-500 mt-1">
-              Optional: Upload a photo/scan of the court order document
+              Optional: Upload a PDF of the court order document
             </p>
           </div>
         </div>
@@ -527,7 +536,7 @@ export default function DisposalForm({ redirectUrl, disposeAction }: DisposalFor
       <div className="flex gap-4 pt-4">
         <button
           type="submit"
-          disabled={loading || uploadingDisposalPhoto || uploadingCourtOrderPhoto}
+          disabled={loading || uploadingDisposalPhoto || uploadingCourtOrderPdf}
           className="flex-1 bg-[#dc3545] text-white py-3 rounded-lg font-bold hover:bg-[#c82333] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
         >
           {loading ? (
