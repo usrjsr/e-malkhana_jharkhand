@@ -1,6 +1,6 @@
-import {connectDB} from "@/lib/db"
-import {Case} from "@/models/Case";
-import {Property} from "@/models/Property";
+import { connectDB } from "@/lib/db"
+import { Case } from "@/models/Case";
+import { Property } from "@/models/Property";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -52,8 +52,8 @@ export default async function DashboardPage() {
       { currentOfficer: userId }
     ];
   }
-  
-  
+
+
   const independentProperties = await Property.countDocuments({ ...propertyFilter, caseId: null });
 
   return (
@@ -83,7 +83,7 @@ export default async function DashboardPage() {
             )}
 
             <Link
-              href="/cases/new"
+              href="/addcase"
               className="w-full sm:w-auto text-center bg-[#1e3a8a] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#1e40af] transition border-2 border-[#1e3a8a] shadow-md"
             >
               + New Case

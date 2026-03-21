@@ -24,9 +24,11 @@ const caseSchema = new Schema(
       trim: true,
       uppercase: true,
     },
-    stationAddress: {
+    crimeType: {
       type: String,
-      trim: true,
+      required: true,
+      enum: ["THEFT", "ROBBERY", "BURGLARY", "MURDER", "ASSAULT", "FRAUD", "KIDNAPPING", "DACOITY", "CYBER_CRIME", "DRUG_OFFENCE", "ARMS_ACT", "DOMESTIC_VIOLENCE", "SEXUAL_OFFENCE", "CHEATING", "OTHER"],
+      uppercase: true,
     },
     investigatingOfficerName: {
       type: String,
@@ -43,10 +45,7 @@ const caseSchema = new Schema(
       type: Date,
       required: true,
     },
-    seizureDate: {
-      type: Date,
-      required: true,
-    },
+
     actAndLaw: {
       type: String,
       required: true,

@@ -2,20 +2,18 @@
 
 import { connectDB } from "@/lib/db";
 import { Case } from "@/models/Case";
-import { User } from "@/models/User";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { asyncHandler } from "@/lib/async-handler";
 
 export const createCase = asyncHandler(async (formData: {
   policeStation: string;
-  stationAddress?: string;
   investigatingOfficerName: string;
   investigatingOfficerId: string;
   crimeNumber: string;
   crimeYear: string;
+  crimeType: string;
   firDate: string;
-  seizureDate: string;
   actAndLaw: string;
   section: string;
 }) => {
@@ -25,24 +23,14 @@ export const createCase = asyncHandler(async (formData: {
   }
   await connectDB();
 
-  const officerExists = await User.findOne({
-    officerId: formData.investigatingOfficerId.toUpperCase(),
-  });
-  if (!officerExists) {
-    throw new Error(
-      `Officer ID "${formData.investigatingOfficerId}" not found in the system. Please enter a valid officer ID.`
-    );
-  }
-
   const newCase = await Case.create({
     policeStation: formData.policeStation,
-    stationAddress: formData.stationAddress,
     investigatingOfficerName: formData.investigatingOfficerName,
     investigatingOfficerId: formData.investigatingOfficerId,
     crimeNumber: formData.crimeNumber,
     crimeYear: Number(formData.crimeYear),
+    crimeType: formData.crimeType,
     firDate: new Date(formData.firDate),
-    seizureDate: new Date(formData.seizureDate),
     actAndLaw: formData.actAndLaw,
     section: formData.section,
     reportingOfficer: (session.user as any).id,

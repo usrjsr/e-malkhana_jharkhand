@@ -9,13 +9,12 @@ export default function CaseForm() {
 
   const [form, setForm] = useState({
     policeStation: "",
-    stationAddress: "",
     investigatingOfficerName: "",
     investigatingOfficerId: "",
     crimeNumber: "",
     crimeYear: new Date().getFullYear().toString(),
+    crimeType: "",
     firDate: "",
-    seizureDate: "",
     actAndLaw: "",
     section: "",
   });
@@ -38,7 +37,7 @@ export default function CaseForm() {
     setIsLoading(true);
 
     const newFieldErrors: Record<string, string> = {};
-    const requiredFields = ['policeStation', 'investigatingOfficerName', 'investigatingOfficerId', 'crimeNumber', 'crimeYear', 'firDate', 'seizureDate', 'actAndLaw', 'section'];
+    const requiredFields = ['policeStation', 'investigatingOfficerName', 'investigatingOfficerId', 'crimeNumber', 'crimeYear', 'crimeType', 'firDate', 'actAndLaw', 'section'];
     requiredFields.forEach(field => {
       if (!form[field as keyof typeof form].toString().trim()) {
         newFieldErrors[field] = "Fill this field";
@@ -56,17 +55,7 @@ export default function CaseForm() {
       return;
     }
 
-    if (new Date(form.seizureDate) > new Date()) {
-      setError("Date of Seizure cannot be in the future");
-      setIsLoading(false);
-      return;
-    }
 
-    if (new Date(form.seizureDate) < new Date(form.firDate)) {
-      setError("Date of Seizure cannot be before Date of FIR");
-      setIsLoading(false);
-      return;
-    }
 
     try {
       const result = await createCase(form);
@@ -119,24 +108,7 @@ export default function CaseForm() {
               {fieldErrors.policeStation && <p className="text-red-500 text-sm mt-1">{fieldErrors.policeStation}</p>}
             </div>
 
-            <div>
-              <label
-                htmlFor="stationAddress"
-                className="block text-sm font-semibold text-gray-700 mb-2"
-              >
-                Station Address
-              </label>
-              <input
-                id="stationAddress"
-                name="stationAddress"
-                type="text"
-                placeholder="Enter station address"
-                value={form.stationAddress}
-                onChange={handleChange}
-                className="w-full border-2 border-gray-300 px-4 py-2 focus:outline-none focus:border-[#1e3a8a] text-black"
-                disabled={isLoading}
-              />
-            </div>
+
 
             <div>
               <label
@@ -237,6 +209,42 @@ export default function CaseForm() {
 
             <div>
               <label
+                htmlFor="crimeType"
+                className="block text-sm font-semibold text-gray-700 mb-2"
+              >
+                Crime Type *
+              </label>
+              <select
+                id="crimeType"
+                name="crimeType"
+                value={form.crimeType}
+                onChange={handleChange}
+                className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.crimeType ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
+                required
+                disabled={isLoading}
+              >
+                <option value="">-- Select Crime Type --</option>
+                <option value="THEFT">Theft</option>
+                <option value="ROBBERY">Robbery</option>
+                <option value="BURGLARY">Burglary</option>
+                <option value="MURDER">Murder</option>
+                <option value="ASSAULT">Assault</option>
+                <option value="FRAUD">Fraud</option>
+                <option value="KIDNAPPING">Kidnapping</option>
+                <option value="DACOITY">Dacoity</option>
+                <option value="CYBER_CRIME">Cyber Crime</option>
+                <option value="DRUG_OFFENCE">Drug Offence</option>
+                <option value="ARMS_ACT">Arms Act</option>
+                <option value="DOMESTIC_VIOLENCE">Domestic Violence</option>
+                <option value="SEXUAL_OFFENCE">Sexual Offence</option>
+                <option value="CHEATING">Cheating</option>
+                <option value="OTHER">Other</option>
+              </select>
+              {fieldErrors.crimeType && <p className="text-red-500 text-sm mt-1">{fieldErrors.crimeType}</p>}
+            </div>
+
+            <div>
+              <label
                 htmlFor="firDate"
                 className="block text-sm font-semibold text-gray-700 mb-2"
               >
@@ -255,27 +263,6 @@ export default function CaseForm() {
               />
               {fieldErrors.firDate && <p className="text-red-500 text-sm mt-1">{fieldErrors.firDate}</p>}
             </div>
-
-            <div>
-              <label
-                htmlFor="seizureDate"
-                className="block text-sm font-semibold text-gray-700 mb-2"
-              >
-                Date of Seizure *
-              </label>
-              <input
-                id="seizureDate"
-                name="seizureDate"
-                type="date"
-                value={form.seizureDate}
-                onChange={handleChange}
-                max={new Date().toISOString().split("T")[0]}
-                className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.seizureDate ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
-                required
-                disabled={isLoading}
-              />
-              {fieldErrors.seizureDate && <p className="text-red-500 text-sm mt-1">{fieldErrors.seizureDate}</p>}
-            </div>
           </div>
         </div>
 
@@ -290,17 +277,31 @@ export default function CaseForm() {
               >
                 Act & Law *
               </label>
-              <input
+              <select
                 id="actAndLaw"
                 name="actAndLaw"
-                type="text"
-                placeholder="e.g., Indian Penal Code, NDPS Act, etc."
                 value={form.actAndLaw}
                 onChange={handleChange}
                 className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.actAndLaw ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
                 required
                 disabled={isLoading}
-              />
+              >
+                <option value="">-- Select Act & Law --</option>
+                <option value="IPC">Indian Penal Code (IPC)</option>
+                <option value="CRPC">Code of Criminal Procedure (CrPC)</option>
+                <option value="IEA">Indian Evidence Act (IEA)</option>
+                <option value="NDPS_ACT">NDPS Act</option>
+                <option value="ARMS_ACT">Arms Act</option>
+                <option value="EXPLOSIVE_ACT">Explosive Substances Act</option>
+                <option value="IT_ACT">Information Technology Act</option>
+                <option value="POCSO_ACT">POCSO Act</option>
+                <option value="SC_ST_ACT">SC/ST (Prevention of Atrocities) Act</option>
+                <option value="EXCISE_ACT">Excise Act</option>
+                <option value="WILDLIFE_ACT">Wildlife Protection Act</option>
+                <option value="MVA">Motor Vehicles Act</option>
+                <option value="DV_ACT">Domestic Violence Act</option>
+                <option value="OTHER">Other</option>
+              </select>
               {fieldErrors.actAndLaw && <p className="text-red-500 text-sm mt-1">{fieldErrors.actAndLaw}</p>}
             </div>
 
@@ -311,17 +312,32 @@ export default function CaseForm() {
               >
                 Sections of Law *
               </label>
-              <textarea
+              <select
                 id="section"
                 name="section"
-                placeholder="e.g., Section 302, 307, 34 IPC"
                 value={form.section}
                 onChange={handleChange}
-                rows={3}
-                className={`w-full border-2 px-4 py-2 focus:outline-none resize-none text-black ${fieldErrors.section ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
+                className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.section ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
                 required
                 disabled={isLoading}
-              />
+              >
+                <option value="">-- Select Section --</option>
+                <option value="SEC_302">Section 302 - Murder</option>
+                <option value="SEC_307">Section 307 - Attempt to Murder</option>
+                <option value="SEC_376">Section 376 - Rape</option>
+                <option value="SEC_420">Section 420 - Cheating</option>
+                <option value="SEC_354">Section 354 - Assault on Woman</option>
+                <option value="SEC_379">Section 379 - Theft</option>
+                <option value="SEC_392">Section 392 - Robbery</option>
+                <option value="SEC_395">Section 395 - Dacoity</option>
+                <option value="SEC_304">Section 304 - Culpable Homicide</option>
+                <option value="SEC_323">Section 323 - Voluntarily Causing Hurt</option>
+                <option value="SEC_498A">Section 498A - Cruelty by Husband</option>
+                <option value="SEC_506">Section 506 - Criminal Intimidation</option>
+                <option value="SEC_34">Section 34 - Common Intention</option>
+                <option value="SEC_120B">Section 120B - Criminal Conspiracy</option>
+                <option value="OTHER">Other</option>
+              </select>
               {fieldErrors.section && <p className="text-red-500 text-sm mt-1">{fieldErrors.section}</p>}
             </div>
           </div>
