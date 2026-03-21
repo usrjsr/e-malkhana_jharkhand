@@ -85,17 +85,17 @@ export default async function CaseDetailPage({ params }: Props) {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div>
             <p className="text-sm font-semibold text-gray-600">Investigating Officer</p>
-            <p className="text-lg font-bold">{caseData.investigatingOfficerName}</p>
+            <p className="text-lg font-bold text-black">{caseData.investigatingOfficerName}</p>
           </div>
 
           <div>
             <p className="text-sm font-semibold text-gray-600">Officer ID</p>
-            <p className="text-lg font-bold">{caseData.investigatingOfficerId}</p>
+            <p className="text-lg font-bold text-black">{caseData.investigatingOfficerId}</p>
           </div>
 
           <div>
             <p className="text-sm font-semibold text-gray-600">Date of FIR</p>
-            <p className="text-lg font-bold">
+            <p className="text-lg font-bold text-black">
               {caseData.firDate
                 ? new Date(caseData.firDate).toLocaleDateString("en-IN")
                 : "N/A"}
@@ -104,7 +104,7 @@ export default async function CaseDetailPage({ params }: Props) {
 
           <div>
             <p className="text-sm font-semibold text-gray-600">Date of Seizure</p>
-            <p className="text-lg font-bold">
+            <p className="text-lg font-bold text-black">
               {caseData.seizureDate
                 ? new Date(caseData.seizureDate).toLocaleDateString("en-IN")
                 : "N/A"}
