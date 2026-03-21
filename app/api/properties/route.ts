@@ -47,9 +47,13 @@ export async function POST(req: NextRequest) {
 
   const {
     caseId,
+    propertyType,
     category,
     belongingTo,
     natureOfProperty,
+    gdNumber,
+    gdDate,
+    seizureDate,
     quantity,
     units,
     storageLocation,
@@ -58,6 +62,7 @@ export async function POST(req: NextRequest) {
   } = body
 
   if (
+    !propertyType ||
     !category ||
     !belongingTo ||
     !natureOfProperty ||
@@ -65,6 +70,7 @@ export async function POST(req: NextRequest) {
     !units ||
     !storageLocation ||
     !description ||
+    !seizureDate ||
     !itemImages ||
     !Array.isArray(itemImages) ||
     itemImages.length === 0
@@ -85,9 +91,13 @@ export async function POST(req: NextRequest) {
 
   const property = await Property.create({
     caseId: caseId || null,
+    propertyType,
     category,
     belongingTo,
     natureOfProperty,
+    gdNumber: gdNumber || null,
+    gdDate: gdDate ? new Date(gdDate) : null,
+    seizureDate: new Date(seizureDate),
     quantity,
     units,
     storageLocation,

@@ -148,4 +148,8 @@ propertySchema.pre("save", function () {
   }
 });
 
-export const Property = models.Property || model("Property", propertySchema);
+// Delete cached model to ensure schema changes take effect during dev
+if (models.Property) {
+  delete (mongoose.connection as any).models.Property;
+}
+export const Property = model("Property", propertySchema);
