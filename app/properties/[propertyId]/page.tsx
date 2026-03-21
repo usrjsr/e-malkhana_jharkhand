@@ -36,7 +36,7 @@ export default async function PropertyDetailsPage({
   if (
     userRole !== "ADMIN" &&
     property.seizingOfficer.toString() !== userId &&
-    property.currentOfficer.toString() !== userId
+    property.currentOfficer?.toString() !== userId
   ) {
     redirect("/properties")
   }
