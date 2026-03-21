@@ -31,7 +31,7 @@ export const linkPropertyToCase = asyncHandler(async (params: {
   if (
     userRole !== "ADMIN" &&
     property.seizingOfficer.toString() !== userId &&
-    property.currentOfficer.toString() !== userId
+    property.currentOfficer?.toString() !== userId
   ) {
     throw new Error("Unauthorized")
   }
@@ -41,7 +41,7 @@ export const linkPropertyToCase = asyncHandler(async (params: {
     throw new Error("Case not found")
   }
 
-  property.caseId = caseId
+  property.caseId = caseId as any
   await property.save()
 
   return { linked: true }

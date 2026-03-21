@@ -39,7 +39,7 @@ export default async function PropertyQRPage({ params }: Props) {
 
           <div className="border-4 border-[#1e3a8a] p-6 rounded-xl">
             <img
-              src={property.qrCode}
+              src={property.qrCode ?? undefined}
               alt="QR Code"
               className="w-64 h-64"
             />
@@ -100,7 +100,7 @@ export default async function PropertyQRPage({ params }: Props) {
 
           <div className="bg-white border-4 border-[#1e3a8a] p-8 rounded-xl shadow-2xl">
             <img
-              src={property.qrCode}
+              src={property.qrCode ?? undefined}
               alt="QR Code"
               className="w-80 h-80"
             />
