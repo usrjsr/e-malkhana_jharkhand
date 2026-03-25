@@ -215,13 +215,12 @@ export default async function PropertyDetailsPage({
                   <label className="block text-sm font-semibold text-gray-700 mb-1">
                     Property Type
                   </label>
-                  <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
-                    property.propertyType === "CASE_RELATED"
-                      ? "bg-blue-100 text-blue-700"
-                      : property.propertyType === "KURKI"
-                        ? "bg-orange-100 text-orange-700"
-                        : "bg-purple-100 text-purple-700"
-                  }`}>
+                  <span className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${property.propertyType === "CASE_RELATED"
+                    ? "bg-blue-100 text-blue-700"
+                    : property.propertyType === "KURKI"
+                      ? "bg-orange-100 text-orange-700"
+                      : "bg-purple-100 text-purple-700"
+                    }`}>
                     {property.propertyType === "CASE_RELATED"
                       ? "Case Related"
                       : property.propertyType === "KURKI"
@@ -273,10 +272,10 @@ export default async function PropertyDetailsPage({
                   <p className="text-gray-700">
                     {property.gdDate
                       ? new Date(property.gdDate).toLocaleDateString("en-IN", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })
                       : "N/A"}
                   </p>
                 </div>
@@ -288,10 +287,10 @@ export default async function PropertyDetailsPage({
                   <p className="text-gray-700">
                     {property.seizureDate
                       ? new Date(property.seizureDate).toLocaleDateString("en-IN", {
-                          year: "numeric",
-                          month: "long",
-                          day: "numeric",
-                        })
+                        year: "numeric",
+                        month: "long",
+                        day: "numeric",
+                      })
                       : "N/A"}
                   </p>
                 </div>
@@ -362,7 +361,7 @@ export default async function PropertyDetailsPage({
                 </div>
               </Link>
 
-              {property.status !== "DISPOSED" && (
+              {property.status !== "DISPOSED" && (session.user as any)?.role !== "ADMIN" && (
                 <Link
                   href={`/properties/${property._id}/disposal`}
                   className="bg-white border-2 border-[#dc3545] p-6 rounded-lg hover:bg-[#fff5f5] transition-colors group shadow-lg"

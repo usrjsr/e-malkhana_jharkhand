@@ -1,12 +1,27 @@
 "use client"
 
-import { useParams } from "next/navigation"
+import { useParams, useRouter } from "next/navigation"
 import PropertyForm from "@/components/PropertyForm"
 import Link from "next/link"
+import { useSession } from "next-auth/react"
+import { useEffect } from "react"
 
 export default function NewPropertyPage() {
   const params = useParams()
   const caseId = params.caseId as string
+  const router = useRouter()
+  const { data: session, status } = useSession()
+
+  useEffect(() => {
+    if (status === "unauthenticated") router.replace("/login")
+    if (status === "authenticated" && (session?.user as any)?.role === "ADMIN") {
+      router.replace(`/cases/${caseId}`)
+    }
+  }, [status, session, router, caseId])
+
+  if (status === "loading" || (session?.user as any)?.role === "ADMIN") {
+    return null
+  }
 
   return (
     <div className="min-h-screen bg-white">

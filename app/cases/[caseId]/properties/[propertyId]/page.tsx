@@ -52,8 +52,8 @@ export default async function PropertyDetailPage({ params }: Props) {
             </p>
             <div className="mt-2">
               <span className={`px-3 py-1 text-sm font-semibold ${property.status === "DISPOSED"
-                  ? "bg-[#28a745] text-white"
-                  : "bg-[#ffc107] text-[#856404]"
+                ? "bg-[#28a745] text-white"
+                : "bg-[#ffc107] text-[#856404]"
                 }`}>
                 {property.status}
               </span>
@@ -206,7 +206,7 @@ export default async function PropertyDetailPage({ params }: Props) {
             </div>
           </Link>
 
-          { property.status !== "DISPOSED" && (
+          {property.status !== "DISPOSED" && session.user?.role !== "ADMIN" && (
             <Link
               href={`/cases/${caseId}/properties/${propertyId}/disposal`}
               className="bg-white border-2 border-[#dc3545] p-6 hover:bg-[#fff5f5] transition-colors group"

@@ -31,7 +31,7 @@ export default async function PropertiesPage() {
     .lean()
 
   const independentProperties = properties.filter(p => !p.caseId)
- 
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
@@ -61,12 +61,14 @@ export default async function PropertiesPage() {
             </p>
           </div>
 
-          <Link
-            href="/properties/new"
-            className="mt-4 md:mt-0 bg-[#1e3a8a] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#1e40af] transition shadow-md text-center"
-          >
-            + Register New Property
-          </Link>
+          {(session.user as any)?.role !== "ADMIN" && (
+            <Link
+              href="/properties/new"
+              className="mt-4 md:mt-0 bg-[#1e3a8a] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#1e40af] transition shadow-md text-center"
+            >
+              + Register New Property
+            </Link>
+          )}
         </div>
 
         {/* Independent Properties */}
@@ -110,7 +112,7 @@ export default async function PropertiesPage() {
           </div>
         )}
 
-        
+
 
         {properties.length === 0 && (
           <div className="bg-white border-2 border-dashed border-gray-300 rounded-lg p-12 text-center">
@@ -133,12 +135,14 @@ export default async function PropertiesPage() {
             <p className="text-gray-600 mb-6">
               Start by registering your first property or linking one to a case
             </p>
-            <Link
-              href="/properties/new"
-              className="inline-block bg-[#1e3a8a] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#1e40af] transition"
-            >
-              Register Property Now
-            </Link>
+            {(session.user as any)?.role !== "ADMIN" && (
+              <Link
+                href="/properties/new"
+                className="inline-block bg-[#1e3a8a] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#1e40af] transition"
+              >
+                Register Property Now
+              </Link>
+            )}
           </div>
         )}
       </div>

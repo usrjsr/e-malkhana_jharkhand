@@ -1,8 +1,8 @@
-import {connectDB} from "@/lib/db";
-import {Case} from "@/models/Case";
-import {Property} from "@/models/Property";
-import {CustodyLog} from "@/models/CustodyLog";
-import {User} from "@/models/User";
+import { connectDB } from "@/lib/db";
+import { Case } from "@/models/Case";
+import { Property } from "@/models/Property";
+import { CustodyLog } from "@/models/CustodyLog";
+import { User } from "@/models/User";
 import Link from "next/link";
 import { redirect, notFound } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -56,11 +56,10 @@ export default async function CaseDetailPage({ params }: Props) {
           </h2>
           <p className="text-gray-600">{caseData.policeStation}</p>
           <span
-            className={`inline-block mt-3 px-4 py-1.5 text-sm font-bold rounded-full ${
-              caseData.status === "DISPOSED"
-                ? "bg-[#28a745] text-white"
-                : "bg-[#ffc107] text-[#856404]"
-            }`}
+            className={`inline-block mt-3 px-4 py-1.5 text-sm font-bold rounded-full ${caseData.status === "DISPOSED"
+              ? "bg-[#28a745] text-white"
+              : "bg-[#ffc107] text-[#856404]"
+              }`}
           >
             {caseData.status}
           </span>
@@ -113,12 +112,14 @@ export default async function CaseDetailPage({ params }: Props) {
             <p className="text-sm text-blue-200">{properties.length} properties</p>
           </div>
 
-          <Link
-            href={`/cases/${caseId}/properties/new`}
-            className="w-full sm:w-auto text-center bg-white text-[#1e3a8a] px-6 py-2.5 rounded-lg font-bold hover:bg-gray-100 transition shadow-md"
-          >
-            + Add Property
-          </Link>
+          {(session.user as any)?.role !== "ADMIN" && (
+            <Link
+              href={`/cases/${caseId}/properties/new`}
+              className="w-full sm:w-auto text-center bg-white text-[#1e3a8a] px-6 py-2.5 rounded-lg font-bold hover:bg-gray-100 transition shadow-md"
+            >
+              + Add Property
+            </Link>
+          )}
         </div>
 
         {properties.map((p: any) => {
@@ -127,7 +128,7 @@ export default async function CaseDetailPage({ params }: Props) {
           return (
             <Link
               key={p._id}
-              href={`/properties/${p._id}`}
+              href={`${caseId}/properties/${p._id}`}
               className="block p-6 border-t hover:bg-blue-50 transition-colors cursor-pointer"
             >
               <div className="flex flex-col lg:flex-row gap-6">
@@ -145,11 +146,10 @@ export default async function CaseDetailPage({ params }: Props) {
 
                 <div className="flex flex-col gap-2 w-full sm:w-auto">
                   <span
-                    className={`text-center px-4 py-2.5 rounded-lg font-semibold text-sm ${
-                      p.status === "DISPOSED"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-blue-100 text-[#1e3a8a]"
-                    }`}
+                    className={`text-center px-4 py-2.5 rounded-lg font-semibold text-sm ${p.status === "DISPOSED"
+                      ? "bg-green-100 text-green-800"
+                      : "bg-blue-100 text-[#1e3a8a]"
+                      }`}
                   >
                     {p.status}
                   </span>

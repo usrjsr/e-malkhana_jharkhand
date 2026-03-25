@@ -39,13 +39,7 @@ export default async function DashboardPage() {
   const pendingCases = await Case.countDocuments({ ...caseFilter, status: "PENDING" });
   const disposedCases = await Case.countDocuments({ ...caseFilter, status: "DISPOSED" });
 
-  const threshold = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
 
-  const alertCases = await Case.countDocuments({
-    ...caseFilter,
-    status: "PENDING",
-    createdAt: { $lt: threshold }
-  });
 
   // Count properties for the user
   let propertyFilter: any = {};
@@ -93,12 +87,15 @@ export default async function DashboardPage() {
               </Link>
             )}
 
-            <Link
-              href="/addcase"
-              className="w-full sm:w-auto text-center bg-[#1e3a8a] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#1e40af] transition border-2 border-[#1e3a8a] shadow-md"
-            >
-              + New Case
-            </Link>
+            {userRole !== "ADMIN" && (
+              <Link
+                href="/addcase"
+                className="w-full sm:w-auto text-center bg-[#1e3a8a] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#1e40af] transition border-2 border-[#1e3a8a] shadow-md"
+              >
+                + New Case
+              </Link>
+            )
+            }
 
             {userRole !== "ADMIN" && (
               <>
@@ -124,7 +121,7 @@ export default async function DashboardPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white border-2 border-[#1e3a8a] p-6 rounded-xl shadow-lg">
             <p className="text-5xl font-bold text-[#1e3a8a] mb-2">{totalCases}</p>
             <p className="text-sm text-gray-500">Total Cases</p>
@@ -147,24 +144,7 @@ export default async function DashboardPage() {
             <p className="text-5xl font-bold text-[#17a2b8] mb-2">{independentProperties}</p>
             <p className="text-sm text-gray-500">Independent Properties (Click here)</p>
           </Link>
-
-          <Link
-            href="/alerts"
-            className="bg-white border-2 border-[#dc3545] p-6 rounded-xl shadow-lg hover:border-[#c82333] transition"
-          >
-            <p className="text-5xl font-bold text-[#dc3545] mb-2">{alertCases}</p>
-            <p className="text-sm text-gray-500">Alerts (Click here)</p>
-          </Link>
         </div>
-
-        {alertCases > 0 && (
-          <div className="mb-8 bg-[#fff3cd] border-l-4 border-[#ffc107] p-5 rounded-lg shadow-md">
-            <p className="text-[#856404]">
-              You have <span className="font-bold">{alertCases}</span> case(s)
-              pending for more than 7 days.
-            </p>
-          </div>
-        )}
 
         <div className="bg-white border-2 border-gray-300 p-6 rounded-xl shadow-lg">
           <h3 className="text-xl font-bold text-[#1e3a8a] mb-4">

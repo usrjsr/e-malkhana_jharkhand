@@ -2,12 +2,27 @@
 
 import Link from "next/link";
 import DisposalForm from "@/components/DisposalForm";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { disposeIndependentProperty } from "./action";
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
 
 export default function DisposalPage() {
     const params = useParams();
     const propertyId = params.propertyId as string;
+    const router = useRouter();
+    const { data: session, status } = useSession();
+
+    useEffect(() => {
+        if (status === "unauthenticated") router.replace("/login");
+        if (status === "authenticated" && (session?.user as any)?.role === "ADMIN") {
+            router.replace(`/properties/${propertyId}`);
+        }
+    }, [status, session, router, propertyId]);
+
+    if (status === "loading" || (session?.user as any)?.role === "ADMIN") {
+        return null;
+    }
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex flex-col">

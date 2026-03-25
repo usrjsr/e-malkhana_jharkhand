@@ -1,6 +1,12 @@
 import Link from "next/link"
+import { getServerSession } from "next-auth"
+import { authOptions } from "@/lib/auth"
+import { redirect } from "next/navigation"
 
-export default function AddCase() {
+export default async function AddCase() {
+  const session = await getServerSession(authOptions)
+  if (!session) redirect("/login")
+  if ((session.user as any)?.role === "ADMIN") redirect("/dashboard")
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 flex items-center justify-center px-4 py-12">
       <div className="w-full max-w-3xl">
