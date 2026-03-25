@@ -1,6 +1,7 @@
 import { connectDB } from "@/lib/db"
 import { Case } from "@/models/Case";
 import { Property } from "@/models/Property";
+import { TransferRequest } from "@/models/TransferRequest";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getServerSession } from "next-auth";
@@ -21,7 +22,9 @@ export default async function DashboardPage() {
 
   let caseFilter: any = {};
   if (userRole !== "ADMIN") {
-    const ownedCases = await Case.find({ reportingOfficer: userId }).select("_id").lean();
+    const ownedCases = await Case.find({
+      $or: [{ reportingOfficer: userId }, { reportedOfficer: userId }],
+    }).select("_id").lean();
     const transferredProps = await Property.find({ currentOfficer: userId }).select("caseId").lean();
     const caseIdSet = new Set([
       ...ownedCases.map((c: any) => c._id.toString()),
@@ -53,8 +56,16 @@ export default async function DashboardPage() {
     ];
   }
 
-
   const independentProperties = await Property.countDocuments({ ...propertyFilter, caseId: null });
+
+  // Count pending transfer requests for this officer
+  let pendingTransfers = 0;
+  if (userRole !== "ADMIN") {
+    pendingTransfers = await TransferRequest.countDocuments({
+      toOfficer: userId,
+      status: "PENDING",
+    });
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
@@ -88,6 +99,28 @@ export default async function DashboardPage() {
             >
               + New Case
             </Link>
+
+            {userRole !== "ADMIN" && (
+              <>
+                <Link
+                  href="/transferProperty"
+                  className="w-full sm:w-auto text-center bg-white border-2 border-[#7c3aed] text-[#7c3aed] px-6 py-2.5 rounded-lg font-semibold hover:bg-[#7c3aed] hover:text-white transition shadow-md"
+                >
+                  Transfer Property
+                </Link>
+                <Link
+                  href="/transferPropertyLog"
+                  className="w-full sm:w-auto text-center bg-white border-2 border-[#059669] text-[#059669] px-6 py-2.5 rounded-lg font-semibold hover:bg-[#059669] hover:text-white transition shadow-md relative"
+                >
+                  Transfer Requests
+                  {pendingTransfers > 0 && (
+                    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold w-5 h-5 flex items-center justify-center rounded-full">
+                      {pendingTransfers}
+                    </span>
+                  )}
+                </Link>
+              </>
+            )}
           </div>
         </div>
 

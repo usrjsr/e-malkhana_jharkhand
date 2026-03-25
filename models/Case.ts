@@ -78,6 +78,11 @@ const caseSchema = new Schema(
       ref: "User",
       required: true,
     },
+    reportedOfficer: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
   },
   {
     timestamps: true,

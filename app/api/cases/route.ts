@@ -30,7 +30,9 @@ export async function GET(req: NextRequest) {
   // For non-admin users, restrict to cases they own or have properties transferred to them
   let allowedCaseIds: string[] | null = null
   if (userRole !== "ADMIN") {
-    const ownedCases = await Case.find({ reportingOfficer: userId }).select("_id").lean()
+    const ownedCases = await Case.find({
+      $or: [{ reportingOfficer: userId }, { reportedOfficer: userId }],
+    }).select("_id").lean()
     const transferredProps = await Property.find({ currentOfficer: userId }).select("caseId").lean()
     const caseIdSet = new Set([
       ...ownedCases.map((c: any) => c._id.toString()),
