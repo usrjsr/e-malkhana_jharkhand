@@ -213,15 +213,29 @@ export default function TransferPropertyLogPage() {
                         <div className="text-black">
                           {item.itemType === "CASE" ? (
                             <span>
-                              {item.details?.caseNumber ||
-                                `${item.details?.crimeNumber}/${item.details?.crimeYear}`}{" "}
+                              <a
+                                href={`/cases/${item.itemId}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-medium text-[#1e3a8a] underline hover:text-[#1e40af]"
+                              >
+                                {item.details?.caseNumber ||
+                                  `${item.details?.crimeNumber}/${item.details?.crimeYear}`}
+                              </a>{" "}
                               <span className="text-gray-500 text-sm">
                                 — {item.details?.policeStation}
                               </span>
                             </span>
                           ) : (
                             <span>
-                              {item.details?.propertyTag}{" "}
+                              <a
+                                href={`/properties/${item.itemId}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="font-medium text-[#1e3a8a] underline hover:text-[#1e40af]"
+                              >
+                                {item.details?.propertyTag}
+                              </a>{" "}
                               <span className="text-gray-500 text-sm">
                                 — {item.details?.category} —{" "}
                                 {item.details?.description?.slice(0, 50)}

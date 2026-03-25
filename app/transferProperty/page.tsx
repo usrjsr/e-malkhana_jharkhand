@@ -240,9 +240,15 @@ export default function TransferPropertyPage() {
                       className="w-4 h-4 accent-[#1e3a8a]"
                     />
                     <div>
-                      <span className="font-medium text-black">
+                      <a
+                        href={`/cases/${c._id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-[#1e3a8a] underline hover:text-[#1e40af]"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         {c.caseNumber || `${c.crimeNumber}/${c.crimeYear}`}
-                      </span>
+                      </a>
                       <span className="text-gray-500 text-sm ml-2">
                         — {c.policeStation}
                       </span>
@@ -280,9 +286,15 @@ export default function TransferPropertyPage() {
                       className="w-4 h-4 accent-[#1e3a8a]"
                     />
                     <div>
-                      <span className="font-medium text-black">
+                      <a
+                        href={`/properties/${p._id}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-medium text-[#1e3a8a] underline hover:text-[#1e40af]"
+                        onClick={(e) => e.stopPropagation()}
+                      >
                         {p.propertyTag}
-                      </span>
+                      </a>
                       <span className="text-gray-500 text-sm ml-2">
                         — {p.category} — {p.description?.slice(0, 60)}
                       </span>

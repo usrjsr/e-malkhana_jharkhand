@@ -102,14 +102,7 @@ export default async function CaseDetailPage({ params }: Props) {
             </p>
           </div>
 
-          <div>
-            <p className="text-sm font-semibold text-gray-600">Date of Seizure</p>
-            <p className="text-lg font-bold text-black">
-              {caseData.seizureDate
-                ? new Date(caseData.seizureDate).toLocaleDateString("en-IN")
-                : "N/A"}
-            </p>
-          </div>
+
         </div>
       </div>
 
@@ -132,11 +125,16 @@ export default async function CaseDetailPage({ params }: Props) {
           const last = lastLogByProperty[p._id.toString()];
 
           return (
-            <div key={p._id} className="p-6 border-t">
+            <Link
+              key={p._id}
+              href={`/properties/${p._id}`}
+              className="block p-6 border-t hover:bg-blue-50 transition-colors cursor-pointer"
+            >
               <div className="flex flex-col lg:flex-row gap-6">
                 <div className="flex-1">
                   <p className="text-xl font-bold">{p.category}</p>
                   <p className="text-sm text-gray-600">{p.natureOfProperty} | {p.storageLocation}</p>
+                  <p className="text-xs text-[#1e3a8a] font-semibold mt-1">{p.propertyTag}</p>
 
                   {last && (
                     <p className="text-sm text-gray-700 mt-2">
@@ -146,22 +144,18 @@ export default async function CaseDetailPage({ params }: Props) {
                 </div>
 
                 <div className="flex flex-col gap-2 w-full sm:w-auto">
-                  <Link
-                    href={`/cases/${caseId}/properties/${p._id}`}
-                    className="w-full sm:w-auto text-center bg-[#1e3a8a] text-white px-4 py-2.5 rounded-lg font-semibold"
+                  <span
+                    className={`text-center px-4 py-2.5 rounded-lg font-semibold text-sm ${
+                      p.status === "DISPOSED"
+                        ? "bg-green-100 text-green-800"
+                        : "bg-blue-100 text-[#1e3a8a]"
+                    }`}
                   >
-                    View Details
-                  </Link>
-
-                  <Link
-                    href={`/cases/${caseId}/properties/${p._id}/custody`}
-                    className="w-full sm:w-auto text-center bg-white border-2 border-[#1e3a8a] text-[#1e3a8a] px-4 py-2.5 rounded-lg font-semibold"
-                  >
-                    Custody Log
-                  </Link>
+                    {p.status}
+                  </span>
                 </div>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>
