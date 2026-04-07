@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { createUser } from "@/app/users/new/actions";
+import PoliceStationSelect from "@/components/PoliceStationSelect";
 
 export default function UserForm() {
   const router = useRouter();
@@ -232,18 +233,13 @@ export default function UserForm() {
             >
               Police Station *
             </label>
-            <input
-              id="policeStation"
-              name="policeStation"
-              type="text"
-              placeholder="Enter police station"
+            <PoliceStationSelect
               value={form.policeStation}
-              onChange={handleChange}
-              className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.policeStation ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
-              required
+              onChange={(value) => setForm({ ...form, policeStation: value })}
               disabled={isLoading}
+              required
+              error={fieldErrors.policeStation}
             />
-            {fieldErrors.policeStation && <p className="text-red-500 text-sm mt-1">{fieldErrors.policeStation}</p>}
           </div>
 
           <div>
@@ -263,8 +259,8 @@ export default function UserForm() {
               disabled={isLoading}
             >
               <option value="OFFICER">Officer</option>
+              <option value="SHO">SHO</option>
               <option value="ADMIN">Admin</option>
-              <option value="CLERK">Clerk</option>
             </select>
             {fieldErrors.role && <p className="text-red-500 text-sm mt-1">{fieldErrors.role}</p>}
           </div>

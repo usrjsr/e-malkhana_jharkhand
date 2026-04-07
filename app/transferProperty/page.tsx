@@ -9,7 +9,7 @@ interface CaseItem {
   caseNumber: string;
   crimeNumber: string;
   crimeYear: number;
-  policeStation: string;
+  policeStation: string | { _id: string; name: string; sarkariId: string; district: string };
 }
 
 interface PropertyItem {
@@ -24,7 +24,7 @@ interface Officer {
   _id: string;
   fullName: string;
   officerId: string;
-  policeStation: string;
+  policeStation: string | { _id: string; name: string; sarkariId: string; district: string };
 }
 
 export default function TransferPropertyPage() {
@@ -195,7 +195,7 @@ export default function TransferPropertyPage() {
                   <option value="">-- Select Officer --</option>
                   {officers.map((o) => (
                     <option key={o._id} value={o.officerId}>
-                      {o.fullName} ({o.officerId}) - {o.policeStation}
+                      {o.fullName} ({o.officerId}) - {typeof o.policeStation === 'object' ? o.policeStation?.name : o.policeStation}
                     </option>
                   ))}
                 </select>
@@ -250,7 +250,7 @@ export default function TransferPropertyPage() {
                         {c.caseNumber || `${c.crimeNumber}/${c.crimeYear}`}
                       </a>
                       <span className="text-gray-500 text-sm ml-2">
-                        — {c.policeStation}
+                        — {typeof c.policeStation === 'object' ? c.policeStation?.name : c.policeStation}
                       </span>
                     </div>
                   </label>

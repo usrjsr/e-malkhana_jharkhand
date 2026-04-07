@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import PoliceStationSelect from "@/components/PoliceStationSelect";
 
 type SearchType = "CASE" | "CASE_PROPERTY" | "UNCLAIMED";
 
@@ -171,12 +172,10 @@ export default function ManageCasesClient() {
                 <label className="block text-sm font-semibold text-gray-700 mb-1">
                   Police Station
                 </label>
-                <input
-                  type="text"
-                  placeholder="e.g., Narsipatnam Town"
+                <PoliceStationSelect
                   value={policeStation}
-                  onChange={(e) => setPoliceStation(e.target.value)}
-                  className="w-full border-2 border-gray-300 rounded-lg px-4 py-2.5 focus:outline-none focus:border-[#1e3a8a] text-black"
+                  onChange={setPoliceStation}
+                  placeholder="Select police station"
                 />
               </div>
 
@@ -382,7 +381,11 @@ export default function ManageCasesClient() {
                     Crime {c.crimeNumber}/{c.crimeYear}
                   </h4>
                   <div className="flex flex-wrap gap-4 mt-1 text-sm text-gray-600">
-                    <span>{c.policeStation}</span>
+                    <span>
+                      {typeof c.policeStation === "object"
+                        ? c.policeStation?.name || "N/A"
+                        : c.policeStation}
+                    </span>
                     {c.actAndLaw && <span>{c.actAndLaw}</span>}
                   </div>
                 </div>

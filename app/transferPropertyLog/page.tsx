@@ -13,7 +13,7 @@ interface TransferItem {
     caseNumber?: string;
     crimeNumber?: string;
     crimeYear?: number;
-    policeStation?: string;
+    policeStation?: string | { _id: string; name: string; sarkariId: string; district: string };
     propertyTag?: string;
     description?: string;
     category?: string;
@@ -223,7 +223,7 @@ export default function TransferPropertyLogPage() {
                                   `${item.details?.crimeNumber}/${item.details?.crimeYear}`}
                               </a>{" "}
                               <span className="text-gray-500 text-sm">
-                                — {item.details?.policeStation}
+                                — {typeof item.details?.policeStation === 'object' ? item.details?.policeStation?.name : item.details?.policeStation}
                               </span>
                             </span>
                           ) : (

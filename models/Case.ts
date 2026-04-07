@@ -19,10 +19,10 @@ const caseSchema = new Schema(
       required: true,
     },
     policeStation: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "PoliceStation",
       required: true,
-      trim: true,
-      uppercase: true,
+      index: true
     },
     crimeType: {
       type: String,

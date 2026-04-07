@@ -112,7 +112,7 @@ export default async function ReportsPage() {
                     <td className="px-6 py-4 font-bold text-[#1e3a8a] print:px-3 print:py-2 print:text-xs">
                       {caseItem.crimeNumber}/{caseItem.crimeYear}
                     </td>
-                    <td className="px-6 py-4 text-gray-700 print:px-3 print:py-2 print:text-xs">{caseItem.policeStation}</td>
+                    <td className="px-6 py-4 text-gray-700 print:px-3 print:py-2 print:text-xs">{typeof caseItem.policeStation === 'object' ? caseItem.policeStation?.name : caseItem.policeStation}</td>
                     <td className="px-6 py-4 text-gray-700 print:px-3 print:py-2 print:text-xs">{caseItem.crimeYear}</td>
                     <td className="px-6 py-4 text-center font-bold text-[#1e3a8a] print:px-3 print:py-2 print:text-xs">{caseItem.totalProperties}</td>
                     <td className="px-6 py-4 text-center font-bold text-[#ffc107] print:px-3 print:py-2 print:text-xs">{caseItem.pendingProperties}</td>

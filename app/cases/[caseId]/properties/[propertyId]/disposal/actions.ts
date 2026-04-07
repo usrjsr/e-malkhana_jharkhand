@@ -23,7 +23,6 @@ export const disposeProperty = asyncHandler(async (formData: {
     throw new Error("Unauthorized");
   }
 
-  
 
   await connectDB();
 

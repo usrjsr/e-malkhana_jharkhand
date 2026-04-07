@@ -23,8 +23,15 @@ export const createCase = asyncHandler(async (formData: {
   }
   await connectDB();
 
+  // Validate police station exists
+  const { PoliceStation } = await import("@/models/PoliceStation");
+  const policeStation = await PoliceStation.findById(formData.policeStation);
+  if (!policeStation) {
+    throw new Error("Invalid police station");
+  }
+
   const newCase = await Case.create({
-    policeStation: formData.policeStation,
+    policeStation: formData.policeStation, // This is now an ObjectId
     investigatingOfficerName: formData.investigatingOfficerName,
     investigatingOfficerId: formData.investigatingOfficerId,
     crimeNumber: formData.crimeNumber,

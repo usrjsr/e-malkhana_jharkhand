@@ -34,8 +34,8 @@ const UserSchema = new Schema(
 
     role: {
       type: String,
-      enum: ["ADMIN", "OFFICER", "CLERK"],
-      default: "OFFICER",
+      enum: ["ADMIN", "SHO", "OFFICER"],
+      default: "SHO",
       index: true
     },
 
@@ -49,9 +49,9 @@ const UserSchema = new Schema(
     },
 
     policeStation: {
-      type: String,
+      type: Schema.Types.ObjectId,
+      ref: "PoliceStation",
       required: true,
-      trim: true,
       index: true
     },
 

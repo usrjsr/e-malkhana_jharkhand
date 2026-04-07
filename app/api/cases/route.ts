@@ -5,15 +5,17 @@ import { Property } from "@/models/Property"
 import { User } from "@/models/User"
 import { getServerSession } from "next-auth"
 import { authOptions } from "@/lib/auth"
+import mongoose from "mongoose"
 
 export async function GET(req: NextRequest) {
-  const session = await getServerSession(authOptions)
+  try {
+    const session = await getServerSession(authOptions)
 
-  if (!session) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
-  }
+    if (!session) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 })
+    }
 
-  await connectDB()
+    await connectDB()
 
   const userId = (session.user as any).id
   const userRole = (session.user as any).role
@@ -58,7 +60,17 @@ export async function GET(req: NextRequest) {
   }
 
   if (policeStation) {
-    filter.policeStation = new RegExp(policeStation, "i")
+    // If it's a valid ObjectId, search by ObjectId, otherwise search by name
+    if (mongoose.Types.ObjectId.isValid(policeStation)) {
+      filter.policeStation = new mongoose.Types.ObjectId(policeStation)
+    } else {
+      // Populate police stations and filter by name
+      const { PoliceStation } = await import("@/models/PoliceStation")
+      const stations = await PoliceStation.find({
+        name: new RegExp(policeStation, "i"),
+      }).select("_id").lean()
+      filter.policeStation = { $in: stations.map((s: any) => s._id) }
+    }
   }
 
   if (seizureDateFrom || seizureDateTo) {
@@ -77,10 +89,11 @@ export async function GET(req: NextRequest) {
 
   if (q) {
     const regex = new RegExp(q, "i")
+    // For text search, we'll need to do a more complex query
+    // For now, keep the basic search and handle police station search separately
     filter.$or = [
       { crimeNumber: regex },
       { caseNumber: regex },
-      { policeStation: regex },
       { investigatingOfficerName: regex },
       { investigatingOfficerId: regex },
       { actAndLaw: regex },
@@ -93,9 +106,21 @@ export async function GET(req: NextRequest) {
     }
   }
 
-  const cases = await Case.find(filter).sort({ createdAt: -1 }).limit(100)
+  const cases = await Case.find(filter)
+    .populate("policeStation", "name sarkariId district")
+    .populate("reportingOfficer", "fullName officerId")
+    .populate("reportedOfficer", "fullName officerId")
+    .sort({ createdAt: -1 })
+    .limit(100)
 
   return NextResponse.json(cases)
+  } catch (error: any) {
+    console.error("Error fetching cases:", error)
+    return NextResponse.json(
+      { error: "Failed to fetch cases" },
+      { status: 500 }
+    )
+  }
 }
 
 export async function POST(req: NextRequest) {

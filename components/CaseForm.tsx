@@ -1,11 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { createCase } from "@/app/cases/new/actions";
+import { useSession } from "next-auth/react";
+import PoliceStationSelect from "@/components/PoliceStationSelect";
 
 export default function CaseForm() {
   const router = useRouter();
+  const { data: session } = useSession();
 
   const [form, setForm] = useState({
     policeStation: "",
@@ -22,6 +25,13 @@ export default function CaseForm() {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  // Auto-fill police station for officers
+  useEffect(() => {
+    if (session?.user?.role === "OFFICER" && session.user.policeStation) {
+      setForm(prev => ({ ...prev, policeStation: session.user.policeStation! }));
+    }
+  }, [session]);
 
   function handleChange(
     e: React.ChangeEvent<
@@ -94,18 +104,14 @@ export default function CaseForm() {
               >
                 Police Station Name *
               </label>
-              <input
-                id="policeStation"
-                name="policeStation"
-                type="text"
-                placeholder="Enter police station name"
+              <PoliceStationSelect
                 value={form.policeStation}
-                onChange={handleChange}
-                className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.policeStation ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
+                onChange={(value) => setForm({ ...form, policeStation: value })}
+                disabled={isLoading || session?.user?.role === "OFFICER"}
                 required
-                disabled={isLoading}
+                error={fieldErrors.policeStation}
+                placeholder={session?.user?.role === "OFFICER" ? "Auto-filled from your assignment" : "Select police station"}
               />
-              {fieldErrors.policeStation && <p className="text-red-500 text-sm mt-1">{fieldErrors.policeStation}</p>}
             </div>
 
 

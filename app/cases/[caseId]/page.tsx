@@ -54,7 +54,7 @@ export default async function CaseDetailPage({ params }: Props) {
           <h2 className="text-3xl md:text-4xl font-bold text-[#1e3a8a] mb-2">
             Case {caseData.crimeNumber}/{caseData.crimeYear}
           </h2>
-          <p className="text-gray-600">{caseData.policeStation}</p>
+          <p className="text-gray-600">{typeof caseData.policeStation === 'object' ? caseData.policeStation?.name : caseData.policeStation}</p>
           <span
             className={`inline-block mt-3 px-4 py-1.5 text-sm font-bold rounded-full ${caseData.status === "DISPOSED"
               ? "bg-[#28a745] text-white"

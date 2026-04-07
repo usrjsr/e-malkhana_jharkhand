@@ -21,6 +21,10 @@ export default function Header() {
     pathname.includes("/cases") ||
     pathname.includes("/properties") ||
     pathname.includes("/reports") ||
+    pathname.includes("/police-stations") ||
+    pathname.includes("/users") ||
+    pathname.includes("/transferProperty") ||
+    pathname.includes("/transferPropertyLog") ||
     pathname.includes("/alerts");
 
   const handleLogout = async () => {

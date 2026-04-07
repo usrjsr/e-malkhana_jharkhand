@@ -48,7 +48,7 @@ export default async function PropertyDetailPage({ params }: Props) {
           <div>
             <h2 className="text-3xl font-bold text-[#1e3a8a]">Property Details</h2>
             <p className="text-gray-600 mt-1">
-              Case {caseData.crimeNumber}/{caseData.crimeYear} - {caseData.policeStation}
+              Case {caseData.crimeNumber}/{caseData.crimeYear} - {typeof caseData.policeStation === 'object' ? caseData.policeStation?.name : caseData.policeStation}
             </p>
             <div className="mt-2">
               <span className={`px-3 py-1 text-sm font-semibold ${property.status === "DISPOSED"

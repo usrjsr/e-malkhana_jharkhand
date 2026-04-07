@@ -79,12 +79,26 @@ export default async function DashboardPage() {
 
           <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
             {(session.user as any)?.role === "ADMIN" && (
-              <Link
-                href="/users/new"
-                className="w-full sm:w-auto text-center bg-white border-2 border-[#1e3a8a] text-[#1e3a8a] px-6 py-2.5 rounded-lg font-semibold hover:bg-[#1e3a8a] hover:text-white transition shadow-md"
-              >
-                + Add User
-              </Link>
+              <>
+                <Link
+                  href="/police-stations"
+                  className="w-full sm:w-auto text-center bg-white border-2 border-[#1e3a8a] text-[#1e3a8a] px-6 py-2.5 rounded-lg font-semibold hover:bg-[#1e3a8a] hover:text-white transition shadow-md"
+                >
+                  Police Stations
+                </Link>
+                <Link
+                  href="/users"
+                  className="w-full sm:w-auto text-center bg-white border-2 border-[#7c3aed] text-[#7c3aed] px-6 py-2.5 rounded-lg font-semibold hover:bg-[#7c3aed] hover:text-white transition shadow-md"
+                >
+                  Manage Users
+                </Link>
+                <Link
+                  href="/users/new"
+                  className="w-full sm:w-auto text-center bg-[#1e3a8a] text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-[#1e40af] transition border-2 border-[#1e3a8a] shadow-md"
+                >
+                  + Add User
+                </Link>
+              </>
             )}
 
             {userRole !== "ADMIN" && (
