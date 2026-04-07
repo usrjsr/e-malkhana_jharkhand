@@ -56,24 +56,30 @@ export async function PATCH(req: NextRequest) {
 
   if (action === "ACCEPTED") {
     if (item.itemType === "CASE") {
-      // Both reportingOfficer and reportedOfficer become the accepting officer
+      // Transfer case ownership - set reportingOfficer to accepting officer
+      // reportedOfficer can be cleared or kept as is
       await Case.findByIdAndUpdate(item.itemId, {
         reportingOfficer: userId,
-        reportedOfficer: userId,
+        reportedOfficer: null, // Clear reportedOfficer as transfer is complete
       });
+
+      // Also transfer all properties related to this case
+      await Property.updateMany(
+        { caseId: item.itemId },
+        {
+          currentOfficer: userId,
+          lastMovementAt: new Date()
+        }
+      );
     } else {
       // Transfer property ownership
       await Property.findByIdAndUpdate(item.itemId, {
         currentOfficer: userId,
+        lastMovementAt: new Date()
       });
     }
   } else {
-    // REJECTED — revert reportedOfficer back to the sender
-    if (item.itemType === "CASE") {
-      await Case.findByIdAndUpdate(item.itemId, {
-        reportedOfficer: transferReq.fromOfficer,
-      });
-    }
+    // REJECTED — no changes needed to cases or properties as they weren't modified during request creation
   }
 
   // Check if all items have been acted upon

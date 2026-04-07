@@ -61,15 +61,12 @@ export async function POST(req: NextRequest) {
     items.push({ itemType: "PROPERTY", itemId: propertyId });
   }
 
-  // Set reportedOfficer on selected cases
-  if (cases.length) {
-    await Case.updateMany(
-      { _id: { $in: cases }, reportingOfficer: userId },
-      { $set: { reportedOfficer: toOfficer._id } }
-    );
-  }
+  // For cases, we don't modify the case record during request creation
+  // The transfer request itself will be visible to both officers
+  // Only when accepted will the case ownership change
 
-  // Create transfer request
+  // For properties, we also don't modify during request creation
+  // Only when accepted will the currentOfficer change
   const transferRequest = await TransferRequest.create({
     fromOfficer: userId,
     toOfficer: toOfficer._id,

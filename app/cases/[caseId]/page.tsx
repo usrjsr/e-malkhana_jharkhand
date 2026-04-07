@@ -26,8 +26,28 @@ export default async function CaseDetailPage({ params }: Props) {
   const caseData = await Case.findById(caseId);
   if (!caseData) notFound();
 
-  // Filter properties by user visibility for non-ADMIN users
+  // Check if user has permission to view this case
   const isAdmin = session.user.role === "ADMIN";
+  if (!isAdmin) {
+    const userId = (session.user as any).id;
+    const hasAccess = caseData.reportingOfficer.toString() === userId ||
+                     caseData.reportedOfficer?.toString() === userId;
+    if (!hasAccess) {
+      // Check if user has any properties from this case
+      const userProperties = await Property.find({
+        caseId: caseId,
+        $or: [
+          { seizingOfficer: userId },
+          { currentOfficer: userId },
+        ]
+      }).limit(1);
+      if (userProperties.length === 0) {
+        notFound();
+      }
+    }
+  }
+
+  // Filter properties by user visibility for non-ADMIN users
   const propertyFilter: any = { caseId };
   if (!isAdmin) {
     propertyFilter.$or = [

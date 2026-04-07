@@ -213,29 +213,42 @@ export default function TransferPropertyLogPage() {
                         <div className="text-black">
                           {item.itemType === "CASE" ? (
                             <span>
-                              <a
-                                href={`/cases/${item.itemId}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="font-medium text-[#1e3a8a] underline hover:text-[#1e40af]"
-                              >
-                                {item.details?.caseNumber ||
-                                  `${item.details?.crimeNumber}/${item.details?.crimeYear}`}
-                              </a>{" "}
+                              {item.status === "ACCEPTED" && tab === "sent" ? (
+                                <span className="font-medium text-gray-600">
+                                  {item.details?.caseNumber ||
+                                    `${item.details?.crimeNumber}/${item.details?.crimeYear}`}
+                                </span>
+                              ) : (
+                                <a
+                                  href={`/cases/${item.itemId}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="font-medium text-[#1e3a8a] underline hover:text-[#1e40af]"
+                                >
+                                  {item.details?.caseNumber ||
+                                    `${item.details?.crimeNumber}/${item.details?.crimeYear}`}
+                                </a>
+                              )}{" "}
                               <span className="text-gray-500 text-sm">
                                 — {typeof item.details?.policeStation === 'object' ? item.details?.policeStation?.name : item.details?.policeStation}
                               </span>
                             </span>
                           ) : (
                             <span>
-                              <a
-                                href={`/properties/${item.itemId}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="font-medium text-[#1e3a8a] underline hover:text-[#1e40af]"
-                              >
-                                {item.details?.propertyTag}
-                              </a>{" "}
+                              {item.status === "ACCEPTED" && tab === "sent" ? (
+                                <span className="font-medium text-gray-600">
+                                  {item.details?.propertyTag}
+                                </span>
+                              ) : (
+                                <a
+                                  href={`/properties/${item.itemId}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="font-medium text-[#1e3a8a] underline hover:text-[#1e40af]"
+                                >
+                                  {item.details?.propertyTag}
+                                </a>
+                              )}{" "}
                               <span className="text-gray-500 text-sm">
                                 — {item.details?.category} —{" "}
                                 {item.details?.description?.slice(0, 50)}
