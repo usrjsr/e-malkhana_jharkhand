@@ -36,10 +36,7 @@ export async function GET(req: NextRequest) {
 
   // Officer visibility
   if (!isAdmin) {
-    filter.$or = [
-      { seizingOfficer: userId },
-      { currentOfficer: userId },
-    ];
+    filter.currentOfficer = userId;
   }
 
   // Search filters

@@ -23,10 +23,7 @@ export async function GET(req: NextRequest) {
   const isAdmin = session.user.role === "ADMIN"
   const filter: any = caseId ? { caseId } : { caseId: null }
   if (!isAdmin) {
-    filter.$or = [
-      { seizingOfficer: session.user.id },
-      { currentOfficer: session.user.id },
-    ]
+    filter.currentOfficer = session.user.id
   }
 
   const properties = await Property.find(filter).sort({ createdAt: -1 })

@@ -19,10 +19,7 @@ export default async function PropertiesPage() {
 
   let filter: any = {}
   if (userRole !== "ADMIN") {
-    filter.$or = [
-      { seizingOfficer: userId },
-      { currentOfficer: userId }
-    ]
+    filter.currentOfficer = userId
   }
 
   const properties = await Property.find(filter)

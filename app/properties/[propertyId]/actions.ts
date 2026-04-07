@@ -30,7 +30,6 @@ export const linkPropertyToCase = asyncHandler(async (params: {
 
   if (
     userRole !== "ADMIN" &&
-    property.seizingOfficer.toString() !== userId &&
     property.currentOfficer?.toString() !== userId
   ) {
     throw new Error("Unauthorized")

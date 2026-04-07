@@ -36,10 +36,7 @@ export default async function CaseDetailPage({ params }: Props) {
       // Check if user has any properties from this case
       const userProperties = await Property.find({
         caseId: caseId,
-        $or: [
-          { seizingOfficer: userId },
-          { currentOfficer: userId },
-        ]
+        currentOfficer: userId,
       }).limit(1);
       if (userProperties.length === 0) {
         notFound();
@@ -50,10 +47,7 @@ export default async function CaseDetailPage({ params }: Props) {
   // Filter properties by user visibility for non-ADMIN users
   const propertyFilter: any = { caseId };
   if (!isAdmin) {
-    propertyFilter.$or = [
-      { seizingOfficer: session.user.id },
-      { currentOfficer: session.user.id },
-    ];
+    propertyFilter.currentOfficer = session.user.id;
   }
   const properties = await Property.find(propertyFilter);
 

@@ -44,10 +44,7 @@ export default async function DashboardPage() {
   // Count properties for the user
   let propertyFilter: any = {};
   if (userRole !== "ADMIN") {
-    propertyFilter.$or = [
-      { seizingOfficer: userId },
-      { currentOfficer: userId }
-    ];
+    propertyFilter.currentOfficer = userId;
   }
 
   const independentProperties = await Property.countDocuments({ ...propertyFilter, caseId: null });
