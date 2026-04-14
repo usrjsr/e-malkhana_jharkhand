@@ -386,7 +386,7 @@ export default function ManageCasesClient() {
                         ? c.policeStation?.name || "N/A"
                         : c.policeStation}
                     </span>
-                    {c.actAndLaw && <span>{c.actAndLaw}</span>}
+                    {c.actAndLaw && c.actAndLaw.length > 0 && <span>{Array.isArray(c.actAndLaw) ? c.actAndLaw.join(', ') : c.actAndLaw}</span>}
                   </div>
                 </div>
                 <span
@@ -423,7 +423,7 @@ export default function ManageCasesClient() {
                     </div>
                     <div>
                       <p className="text-gray-500 font-semibold">Section</p>
-                      <p className="font-bold">{c.section}</p>
+                      <p className="font-bold">{c.section && c.section.length > 0 ? (Array.isArray(c.section) ? c.section.join(', ') : c.section) : 'N/A'}</p>
                     </div>
                   </div>
 

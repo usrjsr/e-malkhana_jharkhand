@@ -18,13 +18,48 @@ export default function CaseForm() {
     crimeYear: new Date().getFullYear().toString(),
     crimeType: "",
     firDate: "",
-    actAndLaw: "",
-    section: "",
+    actAndLaw: [] as string[],
+    section: [] as string[],
   });
 
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+
+  const actAndLawOptions = [
+    { value: "IPC", label: "Indian Penal Code (IPC)" },
+    { value: "CRPC", label: "Code of Criminal Procedure (CrPC)" },
+    { value: "IEA", label: "Indian Evidence Act (IEA)" },
+    { value: "NDPS_ACT", label: "NDPS Act" },
+    { value: "ARMS_ACT", label: "Arms Act" },
+    { value: "EXPLOSIVE_ACT", label: "Explosive Substances Act" },
+    { value: "IT_ACT", label: "Information Technology Act" },
+    { value: "POCSO_ACT", label: "POCSO Act" },
+    { value: "SC_ST_ACT", label: "SC/ST (Prevention of Atrocities) Act" },
+    { value: "EXCISE_ACT", label: "Excise Act" },
+    { value: "WILDLIFE_ACT", label: "Wildlife Protection Act" },
+    { value: "MVA", label: "Motor Vehicles Act" },
+    { value: "DV_ACT", label: "Domestic Violence Act" },
+    { value: "OTHER", label: "Other" },
+  ];
+
+  const sectionOptions = [
+    { value: "SEC_302", label: "Section 302 - Murder" },
+    { value: "SEC_307", label: "Section 307 - Attempt to Murder" },
+    { value: "SEC_376", label: "Section 376 - Rape" },
+    { value: "SEC_420", label: "Section 420 - Cheating" },
+    { value: "SEC_354", label: "Section 354 - Assault on Woman" },
+    { value: "SEC_379", label: "Section 379 - Theft" },
+    { value: "SEC_392", label: "Section 392 - Robbery" },
+    { value: "SEC_395", label: "Section 395 - Dacoity" },
+    { value: "SEC_304", label: "Section 304 - Culpable Homicide" },
+    { value: "SEC_323", label: "Section 323 - Voluntarily Causing Hurt" },
+    { value: "SEC_498A", label: "Section 498A - Cruelty by Husband" },
+    { value: "SEC_506", label: "Section 506 - Criminal Intimidation" },
+    { value: "SEC_34", label: "Section 34 - Common Intention" },
+    { value: "SEC_120B", label: "Section 120B - Criminal Conspiracy" },
+    { value: "OTHER", label: "Other" },
+  ];
 
   // Auto-fill police station for officers
   useEffect(() => {
@@ -38,7 +73,17 @@ export default function CaseForm() {
       HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
     >,
   ) {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const target = e.target;
+    if (target.type === 'checkbox') {
+      const { name, value, checked } = target as HTMLInputElement;
+      if (checked) {
+        setForm(prev => ({ ...prev, [name]: [...(prev[name as keyof typeof prev] as string[]), value] }));
+      } else {
+        setForm(prev => ({ ...prev, [name]: (prev[name as keyof typeof prev] as string[]).filter(v => v !== value) }));
+      }
+    } else {
+      setForm({ ...form, [target.name]: target.value });
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -49,7 +94,12 @@ export default function CaseForm() {
     const newFieldErrors: Record<string, string> = {};
     const requiredFields = ['policeStation', 'investigatingOfficerName', 'investigatingOfficerId', 'crimeNumber', 'crimeYear', 'crimeType', 'firDate', 'actAndLaw', 'section'];
     requiredFields.forEach(field => {
-      if (!form[field as keyof typeof form].toString().trim()) {
+      const value = form[field as keyof typeof form];
+      if (Array.isArray(value)) {
+        if (value.length === 0) {
+          newFieldErrors[field] = "Select at least one option";
+        }
+      } else if (!value.toString().trim()) {
         newFieldErrors[field] = "Fill this field";
       }
     });
@@ -278,72 +328,63 @@ export default function CaseForm() {
           <div className="grid grid-cols-1 gap-4">
             <div>
               <label
-                htmlFor="actAndLaw"
                 className="block text-sm font-semibold text-gray-700 mb-2"
               >
                 Act & Law *
               </label>
-              <select
-                id="actAndLaw"
-                name="actAndLaw"
-                value={form.actAndLaw}
-                onChange={handleChange}
-                className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.actAndLaw ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
-                required
-                disabled={isLoading}
-              >
-                <option value="">-- Select Act & Law --</option>
-                <option value="IPC">Indian Penal Code (IPC)</option>
-                <option value="CRPC">Code of Criminal Procedure (CrPC)</option>
-                <option value="IEA">Indian Evidence Act (IEA)</option>
-                <option value="NDPS_ACT">NDPS Act</option>
-                <option value="ARMS_ACT">Arms Act</option>
-                <option value="EXPLOSIVE_ACT">Explosive Substances Act</option>
-                <option value="IT_ACT">Information Technology Act</option>
-                <option value="POCSO_ACT">POCSO Act</option>
-                <option value="SC_ST_ACT">SC/ST (Prevention of Atrocities) Act</option>
-                <option value="EXCISE_ACT">Excise Act</option>
-                <option value="WILDLIFE_ACT">Wildlife Protection Act</option>
-                <option value="MVA">Motor Vehicles Act</option>
-                <option value="DV_ACT">Domestic Violence Act</option>
-                <option value="OTHER">Other</option>
-              </select>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-48 overflow-y-auto border-2 px-4 py-2 focus:outline-none text-black border-gray-300 focus-within:border-[#1e3a8a]">
+                {actAndLawOptions.map((option) => (
+                  <div key={option.value} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`actAndLaw-${option.value}`}
+                      name="actAndLaw"
+                      value={option.value}
+                      checked={form.actAndLaw.includes(option.value)}
+                      onChange={handleChange}
+                      disabled={isLoading}
+                      className="mr-2"
+                    />
+                    <label
+                      htmlFor={`actAndLaw-${option.value}`}
+                      className="text-sm cursor-pointer"
+                    >
+                      {option.label}
+                    </label>
+                  </div>
+                ))}
+              </div>
               {fieldErrors.actAndLaw && <p className="text-red-500 text-sm mt-1">{fieldErrors.actAndLaw}</p>}
             </div>
 
             <div>
               <label
-                htmlFor="section"
                 className="block text-sm font-semibold text-gray-700 mb-2"
               >
                 Sections of Law *
               </label>
-              <select
-                id="section"
-                name="section"
-                value={form.section}
-                onChange={handleChange}
-                className={`w-full border-2 px-4 py-2 focus:outline-none text-black ${fieldErrors.section ? 'border-red-500' : 'border-gray-300 focus:border-[#1e3a8a]'}`}
-                required
-                disabled={isLoading}
-              >
-                <option value="">-- Select Section --</option>
-                <option value="SEC_302">Section 302 - Murder</option>
-                <option value="SEC_307">Section 307 - Attempt to Murder</option>
-                <option value="SEC_376">Section 376 - Rape</option>
-                <option value="SEC_420">Section 420 - Cheating</option>
-                <option value="SEC_354">Section 354 - Assault on Woman</option>
-                <option value="SEC_379">Section 379 - Theft</option>
-                <option value="SEC_392">Section 392 - Robbery</option>
-                <option value="SEC_395">Section 395 - Dacoity</option>
-                <option value="SEC_304">Section 304 - Culpable Homicide</option>
-                <option value="SEC_323">Section 323 - Voluntarily Causing Hurt</option>
-                <option value="SEC_498A">Section 498A - Cruelty by Husband</option>
-                <option value="SEC_506">Section 506 - Criminal Intimidation</option>
-                <option value="SEC_34">Section 34 - Common Intention</option>
-                <option value="SEC_120B">Section 120B - Criminal Conspiracy</option>
-                <option value="OTHER">Other</option>
-              </select>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-48 overflow-y-auto border-2 px-4 py-2 focus:outline-none text-black border-gray-300 focus-within:border-[#1e3a8a]">
+                {sectionOptions.map((option) => (
+                  <div key={option.value} className="flex items-center">
+                    <input
+                      type="checkbox"
+                      id={`section-${option.value}`}
+                      name="section"
+                      value={option.value}
+                      checked={form.section.includes(option.value)}
+                      onChange={handleChange}
+                      disabled={isLoading}
+                      className="mr-2"
+                    />
+                    <label
+                      htmlFor={`section-${option.value}`}
+                      className="text-sm cursor-pointer"
+                    >
+                      {option.label}
+                    </label>
+                  </div>
+                ))}
+              </div>
               {fieldErrors.section && <p className="text-red-500 text-sm mt-1">{fieldErrors.section}</p>}
             </div>
           </div>

@@ -14,8 +14,8 @@ export const createCase = asyncHandler(async (formData: {
   crimeYear: string;
   crimeType: string;
   firDate: string;
-  actAndLaw: string;
-  section: string;
+  actAndLaw: string[];
+  section: string[];
 }) => {
   const session = await getServerSession(authOptions);
   if (!session) {

@@ -80,11 +80,11 @@ export async function GET(req: NextRequest) {
   }
 
   if (actAndLaw) {
-    filter.actAndLaw = new RegExp(actAndLaw, "i")
+    filter.actAndLaw = { $elemMatch: { $regex: actAndLaw, $options: 'i' } }
   }
 
   if (section) {
-    filter.section = new RegExp(section, "i")
+    filter.section = { $elemMatch: { $regex: section, $options: 'i' } }
   }
 
   if (q) {
@@ -96,8 +96,8 @@ export async function GET(req: NextRequest) {
       { caseNumber: regex },
       { investigatingOfficerName: regex },
       { investigatingOfficerId: regex },
-      { actAndLaw: regex },
-      { section: regex },
+      { actAndLaw: { $elemMatch: { $regex: regex } } },
+      { section: { $elemMatch: { $regex: regex } } },
     ]
 
     const yearNum = Number(q)

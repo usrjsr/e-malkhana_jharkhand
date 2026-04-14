@@ -47,16 +47,24 @@ const caseSchema = new Schema(
     },
 
     actAndLaw: {
-      type: String,
+      type: [String],
       required: true,
-      trim: true,
-      uppercase: true,
+      validate: {
+        validator: function(v: string[]) {
+          return v.length > 0;
+        },
+        message: 'At least one Act & Law must be selected'
+      }
     },
     section: {
-      type: String,
+      type: [String],
       required: true,
-      trim: true,
-      uppercase: true,
+      validate: {
+        validator: function(v: string[]) {
+          return v.length > 0;
+        },
+        message: 'At least one Section must be selected'
+      }
     },
     status: {
       type: String,
