@@ -152,7 +152,7 @@ export default async function PropertyDetailsPage({
               {(property.itemImage as string[]).length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {(property.itemImage as string[]).map((imageUrl, index) => (
-                    <div key={index} className="relative group">
+                    <div key={imageUrl} className="relative group">
                       <img
                         src={imageUrl}
                         alt={`Property image ${index + 1}`}

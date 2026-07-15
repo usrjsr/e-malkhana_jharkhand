@@ -212,7 +212,7 @@ export default function PropertyForm({ caseId }: { caseId?: string }) {
                   </p>
                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                     {imageUrls.map((url, index) => (
-                      <div key={index} className="relative group">
+                      <div key={url} className="relative group">
                         <img
                           src={url}
                           alt={`Property image ${index + 1}`}
